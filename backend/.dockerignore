@@ -1,0 +1,88 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sqlite3
+*.db
+db.sqlite3
+sqlite_export.json
+
+# Logs
+*.log
+logs/
+/var/log/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Documentation
+docs/
+*.md
+README.md
+LICENSE
+CHANGELOG.md
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Media files (don't include in image)
+media/
+
+# Static files (collected during build)
+staticfiles/
+
+# Node modules (if any)
+node_modules/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Backups
+*.bak
+*.backup
+backups/
+
+# OS files
+Thumbs.db
+.DS_Store

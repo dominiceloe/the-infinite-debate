@@ -1,0 +1,51 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Database files
+*.sqlite3
+*.sqlite3-journal
+*.db
+db.sqlite3.backup
+
+# Backups
+*.sql
+*.sql.gz
+backups/
+*.backup
+
+# Coverage reports
+coverage.xml
+htmlcov/
+.coverage
+*.cover
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+*.egg-info/

@@ -1,0 +1,22 @@
+# Development overrides for docker-compose.yml
+# This file is automatically merged with docker-compose.yml
+#
+# ⚠️  WARNING: DO NOT USE IN PRODUCTION ⚠️
+# This file mounts source code and uses Django's runserver.
+# Production should use: docker compose -f docker-compose.yml up -d
+#
+# This file should be COMMITTED for team dev consistency.
+
+services:
+  web:
+    volumes:
+      - .:/app  # Mount source code for live development
+    entrypoint: []  # Remove entrypoint that runs collectstatic
+    command: python manage.py runserver 0.0.0.0:8000  # Auto-reload on changes
+    environment:
+      - DEBUG=True
+
+  celery:
+    volumes:
+      - .:/app  # Mount source code for Celery workers
+    entrypoint: []  # Remove entrypoint script
