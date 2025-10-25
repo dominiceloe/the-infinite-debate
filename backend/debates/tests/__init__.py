@@ -1,0 +1,3 @@
+"""
+Debates app tests.
+"""

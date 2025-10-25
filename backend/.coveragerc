@@ -1,0 +1,44 @@
+[run]
+source =
+    debates
+    personas
+    texts
+    users
+    payments
+    health
+omit =
+    */migrations/*
+    */tests.py
+    */tests/*
+    */test_*.py
+    */__pycache__/*
+    */venv/*
+    */virtualenv/*
+    manage.py
+    */wsgi.py
+    */asgi.py
+    */settings.py
+    */apps.py
+    */admin.py
+    */conftest.py
+    */setup.py
+    */management/commands/*
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+    @abc.abstractmethod
+
+[html]
+directory = htmlcov
