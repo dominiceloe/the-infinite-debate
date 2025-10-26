@@ -57,7 +57,7 @@ api.interceptors.response.use(
         data.message || 'Too many requests. Please try again later.'
       ) as ThrottleError;
       throttleError.isThrottled = true;
-      throttleError.retryAfter = data.retry_after_display || data.retry_after_seconds;
+      throttleError.retryAfter = data.retry_after_display || (data.retry_after_seconds ? String(data.retry_after_seconds) : undefined);
       throttleError.retryAfterSeconds = data.retry_after_seconds;
 
       // Dispatch custom event for global error handling

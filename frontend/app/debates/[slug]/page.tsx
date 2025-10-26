@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseMutationResult } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import type { Debate } from '@/types';
+import type { Debate, Persona } from '@/types';
+import type { DebateGenerationResponse } from '@/types/api';
 import ReactMarkdown from 'react-markdown';
 import { useDebateSSE } from '@/lib/hooks/useDebateSSE';
 import {
@@ -52,7 +53,7 @@ export default function DebateViewPage() {
 
   // Save view preference to localStorage
   const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _event: React.MouseEvent<HTMLElement>,
     newMode: 'transcript' | 'theater' | null
   ) => {
     if (newMode !== null) {
@@ -312,7 +313,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function PendingState({ generateMutation }: { debate: Debate; generateMutation: ReturnType<typeof useMutation> }) {
+function PendingState({ generateMutation }: { debate: Debate; generateMutation: UseMutationResult<DebateGenerationResponse, Error, void, unknown> }) {
   return (
     <Card>
       <CardContent sx={{ p: { xs: 4, md: 6 }, textAlign: 'center' }}>
@@ -732,7 +733,7 @@ function CompletedState({ debate }: { debate: Debate; viewMode: 'transcript' | '
   );
 }
 
-function FailedState({ debate, generateMutation }: { debate: Debate; generateMutation: ReturnType<typeof useMutation> }) {
+function FailedState({ debate, generateMutation }: { debate: Debate; generateMutation: UseMutationResult<DebateGenerationResponse, Error, void, unknown> }) {
   return (
     <Card sx={{ bgcolor: 'error.light', borderColor: 'error.main' }}>
       <CardContent sx={{ p: { xs: 4, md: 6 } }}>
@@ -765,7 +766,7 @@ function FailedState({ debate, generateMutation }: { debate: Debate; generateMut
   );
 }
 
-function ParticipantAccordion({ persona }: { persona: Debate['participants'][0] }) {
+function ParticipantAccordion({ persona }: { persona: Persona }) {
   const [imageError, setImageError] = useState(false);
 
   return (
