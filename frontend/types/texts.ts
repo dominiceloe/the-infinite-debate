@@ -21,7 +21,7 @@ export interface PrimaryText {
   word_count: number;
   reading_difficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
   full_content?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   is_published: boolean;
   processing_status: 'pending' | 'processing' | 'ready' | 'error';
   section_count: number;
