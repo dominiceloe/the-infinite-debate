@@ -32,6 +32,12 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
                 "enum": ["starter", "pro"],
                 "description": "Subscription tier to purchase"
             },
+            "billing_period": {
+                "type": "string",
+                "enum": ["monthly", "yearly"],
+                "default": "monthly",
+                "description": "Billing frequency (monthly or yearly)"
+            },
             "success_url": {
                 "type": "string",
                 "description": "URL to redirect after successful payment"
@@ -63,17 +69,34 @@ class CreateCheckoutSessionView(APIView):
     def post(self, request):
         user = request.user
         tier = request.data.get('tier')  # 'starter' or 'pro'
+        billing_period = request.data.get('billing_period', 'monthly')  # 'monthly' or 'yearly'
 
-        # Map tier to Stripe price ID
+        # Validate inputs
+        if tier not in ['starter', 'pro']:
+            return Response(
+                {'error': 'Invalid subscription tier. Must be "starter" or "pro".'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if billing_period not in ['monthly', 'yearly']:
+            return Response(
+                {'error': 'Invalid billing period. Must be "monthly" or "yearly".'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Map tier + billing_period to Stripe price ID
         price_mapping = {
-            'starter': settings.STRIPE_STUDENT_PRICE_ID,
-            'pro': settings.STRIPE_SCHOLAR_PRICE_ID,
+            ('starter', 'monthly'): settings.STRIPE_STARTER_MONTHLY_PRICE_ID,
+            ('starter', 'yearly'): settings.STRIPE_STARTER_YEARLY_PRICE_ID,
+            ('pro', 'monthly'): settings.STRIPE_PRO_MONTHLY_PRICE_ID,
+            ('pro', 'yearly'): settings.STRIPE_PRO_YEARLY_PRICE_ID,
         }
 
-        if tier not in price_mapping:
+        price_id = price_mapping.get((tier, billing_period))
+        if not price_id:
             return Response(
-                {'error': 'Invalid subscription tier'},
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': f'No Stripe price configured for {tier} {billing_period}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
         try:
@@ -93,7 +116,7 @@ class CreateCheckoutSessionView(APIView):
                             user.stripe_subscription_id,
                             items=[{
                                 'id': subscription_item_id,
-                                'price': price_mapping[tier],
+                                'price': price_id,  # Use dynamically selected price_id
                             }],
                             proration_behavior='create_prorations',  # Prorate the charge
                         )
@@ -151,7 +174,7 @@ class CreateCheckoutSessionView(APIView):
                 customer=user.stripe_customer_id,
                 payment_method_types=['card'],
                 line_items=[{
-                    'price': price_mapping[tier],
+                    'price': price_id,  # Use dynamically selected price_id
                     'quantity': 1,
                 }],
                 mode='subscription',
@@ -160,6 +183,7 @@ class CreateCheckoutSessionView(APIView):
                 metadata={
                     'user_id': user.id,
                     'tier': tier,
+                    'billing_period': billing_period,
                 }
             )
 
@@ -269,10 +293,17 @@ class StripeWebhookView(APIView):
 
             # Determine tier from price ID
             price_id = subscription['items']['data'][0]['price']['id']
-            if price_id == settings.STRIPE_STUDENT_PRICE_ID:
+
+            if price_id in [
+                settings.STRIPE_STARTER_MONTHLY_PRICE_ID,
+                settings.STRIPE_STARTER_YEARLY_PRICE_ID,
+            ]:
                 user.subscription_tier = 'starter'
                 user.credits_remaining = 30
-            elif price_id == settings.STRIPE_SCHOLAR_PRICE_ID:
+            elif price_id in [
+                settings.STRIPE_PRO_MONTHLY_PRICE_ID,
+                settings.STRIPE_PRO_YEARLY_PRICE_ID,
+            ]:
                 user.subscription_tier = 'pro'
                 user.credits_remaining = 100
 
@@ -318,10 +349,16 @@ class StripeWebhookView(APIView):
             price_id = subscription['items']['data'][0]['price']['id']
             old_tier = user.subscription_tier
 
-            if price_id == settings.STRIPE_STUDENT_PRICE_ID:
+            if price_id in [
+                settings.STRIPE_STARTER_MONTHLY_PRICE_ID,
+                settings.STRIPE_STARTER_YEARLY_PRICE_ID,
+            ]:
                 user.subscription_tier = 'starter'
                 user.credits_remaining = 30
-            elif price_id == settings.STRIPE_SCHOLAR_PRICE_ID:
+            elif price_id in [
+                settings.STRIPE_PRO_MONTHLY_PRICE_ID,
+                settings.STRIPE_PRO_YEARLY_PRICE_ID,
+            ]:
                 user.subscription_tier = 'pro'
                 user.credits_remaining = 100
 
