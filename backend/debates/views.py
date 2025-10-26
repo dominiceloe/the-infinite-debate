@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse, StreamingHttpResponse
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
+from core.renderers import SSERenderer
 from .models import Debate
 from .serializers import (
     DebateListSerializer,
@@ -231,20 +232,32 @@ class DebateViewSet(viewsets.ModelViewSet):
             200: OpenApiTypes.OBJECT,
         },
     )
-    @action(detail=True, methods=['get'], renderer_classes=[])
+    @action(detail=True, methods=['get'], renderer_classes=[SSERenderer])
     def stream(self, request, **kwargs):
         """
         Stream debate status updates via Server-Sent Events (SSE).
         GET /api/debates/{slug}/stream/
         """
+        from django.db import connection
+
         debate = self.get_object()
+
+        # Extract data we need before closing DB connection
+        debate_slug = debate.slug
+        initial_status = debate.status
+        initial_rounds = debate.rounds_completed
+        max_rounds = debate.max_rounds
+
+        # Close database connection to prevent connection pool exhaustion
+        # SSE streams can last minutes, we don't need DB connection open
+        connection.close()
 
         def event_stream():
             """Generator function that yields SSE formatted events."""
             # Connect to Redis for pub/sub
             redis_client = redis.Redis.from_url(settings.CELERY_BROKER_URL)
             pubsub = redis_client.pubsub()
-            channel_name = f"debate:{debate.slug}"
+            channel_name = f"debate:{debate_slug}"
 
             try:
                 # Subscribe to debate-specific channel
@@ -253,9 +266,9 @@ class DebateViewSet(viewsets.ModelViewSet):
                 # Send initial status
                 initial_data = {
                     'type': 'status',
-                    'status': debate.status,
-                    'rounds_completed': debate.rounds_completed,
-                    'max_rounds': debate.max_rounds
+                    'status': initial_status,
+                    'rounds_completed': initial_rounds,
+                    'max_rounds': max_rounds
                 }
                 yield f"data: {json.dumps(initial_data)}\n\n"
 
@@ -282,7 +295,7 @@ class DebateViewSet(viewsets.ModelViewSet):
                 # Log error and close connections
                 import logging
                 logger = logging.getLogger(__name__)
-                logger.error(f"SSE stream error for debate {debate.slug}: {str(e)}")
+                logger.error(f"SSE stream error for debate {debate_slug}: {str(e)}")
                 pubsub.unsubscribe(channel_name)
                 pubsub.close()
                 redis_client.close()
