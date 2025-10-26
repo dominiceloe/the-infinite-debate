@@ -205,6 +205,7 @@ export default function PricingPage() {
     try {
       const response = await apiClient.payments.createCheckout({
         tier,
+        billing_period: billingPeriod,  // NEW: pass current billing period selection
         success_url: `${window.location.origin}/account?payment=success`,
         cancel_url: `${window.location.origin}/pricing?payment=cancelled`,
       });
@@ -639,7 +640,7 @@ export default function PricingPage() {
                     Current Plan
                   </Typography>
                   <Typography variant="h6" sx={{ mb: 1 }}>
-                    {currentTierDetails?.name || currentTier} - ${billingPeriod === 'monthly' ? currentTierDetails?.monthlyPrice : currentTierDetails?.annualPrice}/mo
+                    {currentTierDetails?.name || currentTier} - ${billingPeriod === 'monthly' ? currentTierDetails?.monthlyPrice : currentTierDetails?.annualPrice}/{billingPeriod === 'monthly' ? 'mo' : 'yr'}
                   </Typography>
                   <Typography variant="body2">
                     {subscriptionData?.credits_remaining || 0} credits remaining
@@ -655,7 +656,7 @@ export default function PricingPage() {
                     New Plan
                   </Typography>
                   <Typography variant="h6" sx={{ mb: 1 }}>
-                    {newTierDetails?.name} - ${billingPeriod === 'monthly' ? newTierDetails?.monthlyPrice : newTierDetails?.annualPrice}/mo
+                    {newTierDetails?.name} - ${billingPeriod === 'monthly' ? newTierDetails?.monthlyPrice : newTierDetails?.annualPrice}/{billingPeriod === 'monthly' ? 'mo' : 'yr'}
                   </Typography>
                   <Typography variant="body2">
                     {newTierDetails?.credits} credits per month

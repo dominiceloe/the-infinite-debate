@@ -310,8 +310,14 @@ SIMPLE_JWT = {
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY', '')
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
-STRIPE_STUDENT_PRICE_ID = os.getenv('STRIPE_STUDENT_PRICE_ID', '')
-STRIPE_SCHOLAR_PRICE_ID = os.getenv('STRIPE_SCHOLAR_PRICE_ID', '')
+
+# Stripe Price IDs - Starter Tier (30 credits/month, $10/mo or $96/yr)
+STRIPE_STARTER_MONTHLY_PRICE_ID = os.getenv('STRIPE_STARTER_MONTHLY_PRICE_ID', '')
+STRIPE_STARTER_YEARLY_PRICE_ID = os.getenv('STRIPE_STARTER_YEARLY_PRICE_ID', '')
+
+# Stripe Price IDs - Pro Tier (100 credits/month, $25/mo or $240/yr)
+STRIPE_PRO_MONTHLY_PRICE_ID = os.getenv('STRIPE_PRO_MONTHLY_PRICE_ID', '')
+STRIPE_PRO_YEARLY_PRICE_ID = os.getenv('STRIPE_PRO_YEARLY_PRICE_ID', '')
 
 # Celery Configuration
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', os.getenv('REDIS_URL', 'redis://localhost:6379/0'))

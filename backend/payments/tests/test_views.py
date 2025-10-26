@@ -651,6 +651,190 @@ class TestPaymentHistoryView:
 
 
 @pytest.mark.django_db
+class TestCreateCheckoutSessionAnnualBilling:
+    """Test checkout session creation with annual billing support."""
+
+    @patch('stripe.checkout.Session.create')
+    def test_create_checkout_starter_yearly(
+        self, mock_session_create, authenticated_client, test_user
+    ):
+        """Test creating checkout session for starter yearly subscription."""
+        test_user.stripe_customer_id = 'cus_test'
+        test_user.save()
+
+        mock_session_create.return_value = MagicMock(
+            url='https://checkout.stripe.com/yearly',
+            id='cs_yearly'
+        )
+
+        response = authenticated_client.post('/api/payments/create-checkout/', {
+            'tier': 'starter',
+            'billing_period': 'yearly'
+        })
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['is_upgrade'] is False
+
+        # Verify correct price ID used
+        session_kwargs = mock_session_create.call_args[1]
+        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_YEARLY_PRICE_ID
+        assert session_kwargs['metadata']['billing_period'] == 'yearly'
+
+    @patch('stripe.checkout.Session.create')
+    def test_create_checkout_pro_yearly(
+        self, mock_session_create, authenticated_client, test_user
+    ):
+        """Test creating checkout session for pro yearly subscription."""
+        test_user.stripe_customer_id = 'cus_test'
+        test_user.save()
+
+        mock_session_create.return_value = MagicMock(
+            url='https://checkout.stripe.com/pro_yearly',
+            id='cs_pro_yearly'
+        )
+
+        response = authenticated_client.post('/api/payments/create-checkout/', {
+            'tier': 'pro',
+            'billing_period': 'yearly'
+        })
+
+        assert response.status_code == status.HTTP_200_OK
+        session_kwargs = mock_session_create.call_args[1]
+        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_PRO_YEARLY_PRICE_ID
+
+    @patch('stripe.checkout.Session.create')
+    def test_create_checkout_starter_monthly(
+        self, mock_session_create, authenticated_client, test_user
+    ):
+        """Test creating checkout session for starter monthly subscription."""
+        test_user.stripe_customer_id = 'cus_test'
+        test_user.save()
+
+        mock_session_create.return_value = MagicMock(
+            url='https://checkout.stripe.com/monthly',
+            id='cs_monthly'
+        )
+
+        response = authenticated_client.post('/api/payments/create-checkout/', {
+            'tier': 'starter',
+            'billing_period': 'monthly'
+        })
+
+        assert response.status_code == status.HTTP_200_OK
+        session_kwargs = mock_session_create.call_args[1]
+        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_MONTHLY_PRICE_ID
+        assert session_kwargs['metadata']['billing_period'] == 'monthly'
+
+    @patch('stripe.checkout.Session.create')
+    def test_create_checkout_pro_monthly(
+        self, mock_session_create, authenticated_client, test_user
+    ):
+        """Test creating checkout session for pro monthly subscription."""
+        test_user.stripe_customer_id = 'cus_test'
+        test_user.save()
+
+        mock_session_create.return_value = MagicMock(
+            url='https://checkout.stripe.com/pro_monthly',
+            id='cs_pro_monthly'
+        )
+
+        response = authenticated_client.post('/api/payments/create-checkout/', {
+            'tier': 'pro',
+            'billing_period': 'monthly'
+        })
+
+        assert response.status_code == status.HTTP_200_OK
+        session_kwargs = mock_session_create.call_args[1]
+        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_PRO_MONTHLY_PRICE_ID
+
+    def test_invalid_billing_period_returns_400(self, authenticated_client):
+        """Test that invalid billing period returns 400 error."""
+        response = authenticated_client.post('/api/payments/create-checkout/', {
+            'tier': 'starter',
+            'billing_period': 'invalid'
+        })
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert 'Invalid billing period' in response.data['error']
+
+    @patch('stripe.checkout.Session.create')
+    def test_billing_period_defaults_to_monthly(
+        self, mock_session_create, authenticated_client, test_user
+    ):
+        """Test that billing_period defaults to monthly if not provided."""
+        test_user.stripe_customer_id = 'cus_test'
+        test_user.save()
+
+        mock_session_create.return_value = MagicMock(
+            url='https://checkout.stripe.com/default',
+            id='cs_default'
+        )
+
+        response = authenticated_client.post('/api/payments/create-checkout/', {
+            'tier': 'starter'
+            # No billing_period provided
+        })
+
+        assert response.status_code == status.HTTP_200_OK
+        session_kwargs = mock_session_create.call_args[1]
+        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_MONTHLY_PRICE_ID
+        assert session_kwargs['metadata']['billing_period'] == 'monthly'
+
+    @patch('stripe.Subscription.modify')
+    @patch('stripe.Subscription.retrieve')
+    def test_upgrade_from_monthly_to_yearly(
+        self, mock_retrieve, mock_modify, authenticated_client_starter, test_user_starter
+    ):
+        """Test upgrading from monthly to yearly billing."""
+        mock_retrieve.return_value = {
+            'status': 'active',
+            'items': {'data': [{'id': 'si_item123'}]}
+        }
+        mock_modify.return_value = MagicMock()
+
+        response = authenticated_client_starter.post('/api/payments/create-checkout/', {
+            'tier': 'starter',
+            'billing_period': 'yearly'
+        })
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['is_upgrade'] is True
+
+        # Verify subscription modified to yearly price
+        modify_kwargs = mock_modify.call_args[1]
+        assert modify_kwargs['items'][0]['price'] == settings.STRIPE_STARTER_YEARLY_PRICE_ID
+
+    @patch('stripe.Subscription.modify')
+    @patch('stripe.Subscription.retrieve')
+    def test_upgrade_from_starter_monthly_to_pro_yearly(
+        self, mock_retrieve, mock_modify, authenticated_client_starter, test_user_starter
+    ):
+        """Test upgrading tier and billing period simultaneously."""
+        mock_retrieve.return_value = {
+            'status': 'active',
+            'items': {'data': [{'id': 'si_item123'}]}
+        }
+        mock_modify.return_value = MagicMock()
+
+        response = authenticated_client_starter.post('/api/payments/create-checkout/', {
+            'tier': 'pro',
+            'billing_period': 'yearly'
+        })
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['is_upgrade'] is True
+        assert response.data['tier'] == 'pro'
+
+        # Verify both tier and billing period changed
+        modify_kwargs = mock_modify.call_args[1]
+        assert modify_kwargs['items'][0]['price'] == settings.STRIPE_PRO_YEARLY_PRICE_ID
+
+        # Verify user tier and credits updated
+        test_user_starter.refresh_from_db()
+        assert test_user_starter.subscription_tier == 'pro'
+        assert test_user_starter.credits_remaining == 100
+
+
+@pytest.mark.django_db
 class TestPaymentsIntegration:
     """Integration tests for payment flows."""
 
