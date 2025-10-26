@@ -311,11 +311,11 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY', '')
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
 
-# Stripe Price IDs - Starter Tier (30 credits/month, $10/mo or $96/yr)
+# Stripe Price IDs - Starter Tier (30 credits/month, $7.99/mo or $79/yr)
 STRIPE_STARTER_MONTHLY_PRICE_ID = os.getenv('STRIPE_STARTER_MONTHLY_PRICE_ID', '')
 STRIPE_STARTER_YEARLY_PRICE_ID = os.getenv('STRIPE_STARTER_YEARLY_PRICE_ID', '')
 
-# Stripe Price IDs - Pro Tier (100 credits/month, $25/mo or $240/yr)
+# Stripe Price IDs - Pro Tier (200 credits/month, $19.99/mo or $179/yr)
 STRIPE_PRO_MONTHLY_PRICE_ID = os.getenv('STRIPE_PRO_MONTHLY_PRICE_ID', '')
 STRIPE_PRO_YEARLY_PRICE_ID = os.getenv('STRIPE_PRO_YEARLY_PRICE_ID', '')
 
