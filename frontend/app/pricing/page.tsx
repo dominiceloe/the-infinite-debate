@@ -25,12 +25,13 @@ import {
   DialogContentText,
 } from '@mui/material';
 import Link from 'next/link';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import Header from '@/components/Header';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Playfair_Display } from 'next/font/google';
+import { AxiosError } from 'axios';
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700'] });
 
@@ -225,11 +226,12 @@ export default function PricingPage() {
         // New subscription - redirect to Stripe Checkout
         window.location.href = response.checkout_url;
       }
-    } catch (error: any) {
+    } catch (error) {
+      const axiosError = error as AxiosError<{ error?: string }>;
       console.error('Checkout error:', error);
       setSnackbar({
         open: true,
-        message: error.response?.data?.error || 'Failed to create checkout session. Please try again.',
+        message: axiosError.response?.data?.error || 'Failed to create checkout session. Please try again.',
         severity: 'error',
       });
       setCheckoutLoading(null);
@@ -281,7 +283,7 @@ export default function PricingPage() {
             Choose Your Plan
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
-            Unlock conversations with history's greatest minds. Start with a free trial and upgrade anytime.
+            Unlock conversations with history&apos;s greatest minds. Start with a free trial and upgrade anytime.
           </Typography>
 
           {/* Billing Toggle */}
@@ -588,7 +590,7 @@ export default function PricingPage() {
                 Ready to Get Started?
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                Choose your plan above and start exploring debates with history's greatest minds. Cancel anytime.
+                Choose your plan above and start exploring debates with history&apos;s greatest minds. Cancel anytime.
               </Typography>
               <Button
                 component={Link}
@@ -667,7 +669,7 @@ export default function PricingPage() {
                   {isUpgrade ? (
                     <>You will be charged a prorated amount for the upgrade. Your credits will immediately increase to 100.</>
                   ) : isDowngrade ? (
-                    <>Your credits will be reduced to 30 on your next billing cycle. You'll keep your current credits until then.</>
+                    <>Your credits will be reduced to 30 on your next billing cycle. You&apos;ll keep your current credits until then.</>
                   ) : (
                     <>Your subscription will be updated and prorated accordingly.</>
                   )}
