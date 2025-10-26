@@ -32,9 +32,9 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Header from '@/components/Header';
-import { getTierBadge } from '@/lib/tiers';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
+import api from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ReceiptIcon from '@mui/icons-material/Receipt';
@@ -75,7 +75,7 @@ function AccountPageContent() {
   const { data: userStats, isLoading: statsLoading } = useQuery<UserStats>({
     queryKey: ['userStats'],
     queryFn: async () => {
-      const response = await apiClient.api.get('/api/auth/stats/');
+      const response = await api.get('/auth/stats/');
       return response.data;
     },
     enabled: !!user,
@@ -155,7 +155,23 @@ function AccountPageContent() {
     return null;
   }
 
-  const tierBadge = getTierBadge(user.subscription_tier);
+  // Get tier badge for display
+  const getTierDisplay = (tier: string) => {
+    switch (tier) {
+      case 'trial':
+        return { label: 'Trial', color: '#94a3b8' };
+      case 'starter':
+        return { label: 'Starter', color: '#10b981' };
+      case 'pro':
+        return { label: 'Pro', color: '#6366f1' };
+      case 'enterprise':
+        return { label: 'Enterprise', color: '#8b5cf6' };
+      default:
+        return { label: 'Free', color: '#64748b' };
+    }
+  };
+
+  const tierBadge = getTierDisplay(user.subscription_tier);
   const showUpgradeButton = ['trial', 'starter', 'pro'].includes(user.subscription_tier);
   const isOnTrial = user.is_on_trial;
   const isTrialExpired = user.is_trial_expired;
@@ -217,7 +233,7 @@ function AccountPageContent() {
 
         <Grid container spacing={3}>
           {/* Account Details Card */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -286,7 +302,7 @@ function AccountPageContent() {
           </Grid>
 
           {/* Subscription Status Card */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -405,7 +421,7 @@ function AccountPageContent() {
 
           {/* Trial Information Card (if applicable) */}
           {isOnTrial && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Card
                 sx={{
                   bgcolor: 'primary.50',
@@ -422,7 +438,7 @@ function AccountPageContent() {
                   </Box>
 
                   <Grid container spacing={3}>
-                    <Grid item xs={12} sm={4}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Trial Start Date
                       </Typography>
@@ -431,7 +447,7 @@ function AccountPageContent() {
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={12} sm={4}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Trial End Date
                       </Typography>
@@ -440,7 +456,7 @@ function AccountPageContent() {
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={12} sm={4}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Days Remaining
                       </Typography>
@@ -468,7 +484,7 @@ function AccountPageContent() {
 
           {/* Your Most-Used Personas Card */}
           {userStats && userStats.most_used_personas.length > 0 && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Card>
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -485,7 +501,7 @@ function AccountPageContent() {
                   ) : (
                     <Grid container spacing={2}>
                       {userStats.most_used_personas.map(({ persona, times_used }) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={persona.id}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={persona.id}>
                           <Card
                             component={Link}
                             href={`/personas/${persona.slug}`}
@@ -559,7 +575,7 @@ function AccountPageContent() {
 
           {/* Subscription Details Card */}
           {subscriptionData && user.subscription_tier !== 'trial' && (
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card sx={{ height: '100%' }}>
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -610,10 +626,11 @@ function AccountPageContent() {
                           <Alert severity="warning" icon={false} sx={{ py: 1 }}>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                               Subscription ends on{' '}
-                              {new Date(subscriptionData.current_period_end).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                              })}
+                              {subscriptionData.current_period_end &&
+                                new Date(subscriptionData.current_period_end).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                })}
                             </Typography>
                           </Alert>
                         </>
@@ -627,7 +644,7 @@ function AccountPageContent() {
 
           {/* Billing History Card */}
           {user.subscription_tier !== 'trial' && (
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Card sx={{ height: '100%' }}>
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -669,7 +686,7 @@ function AccountPageContent() {
                               </TableCell>
                               <TableCell align="right">
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                  ${parseFloat(payment.amount).toFixed(2)}
+                                  ${(typeof payment.amount === 'number' ? payment.amount : parseFloat(payment.amount)).toFixed(2)}
                                 </Typography>
                               </TableCell>
                               <TableCell align="center">
@@ -713,7 +730,7 @@ function AccountPageContent() {
 
           {/* Manage Subscription Card */}
           {user.subscription_tier !== 'trial' && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Card>
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -728,7 +745,7 @@ function AccountPageContent() {
                   </Typography>
 
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <Button
                         component={Link}
                         href="/pricing"
@@ -739,7 +756,7 @@ function AccountPageContent() {
                         Change Plan
                       </Button>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <Button
                         variant="outlined"
                         fullWidth

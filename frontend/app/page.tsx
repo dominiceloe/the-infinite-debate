@@ -593,7 +593,7 @@ function PersonaCategory({ title, description, personas, gradient }: PersonaCate
       <Grid container spacing={{ xs: 1.5, md: 2 }}>
         {sortedPersonas.map((persona) => {
           const hasAccess = hasPersonaAccess(user?.subscription_tier, persona.required_tier);
-          const badge = getTierBadge(persona.required_tier);
+          const badge = getTierBadge(persona.required_tier, user?.subscription_tier);
           const isLocked = !hasAccess;
 
           return (
