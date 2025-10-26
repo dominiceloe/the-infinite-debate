@@ -134,6 +134,33 @@ npx tsc --noEmit
 
 ---
 
+#### Step 3.5: Production Build Check
+
+```bash
+cd frontend
+npm run build
+```
+
+**Purpose:** Catch Next.js/Turbopack production-specific errors that `tsc --noEmit` misses:
+- Component compilation issues in production mode
+- Bundle optimization errors
+- Dynamic import problems
+- Build-time environment variable issues
+- Framework-specific type coercion
+- MUI/third-party library compatibility issues
+
+**Pass Criteria:** Build completes with exit code 0
+
+**Capture:**
+- Build status (PASS/FAIL)
+- Build time
+- Any warnings (non-fatal)
+- Full error output if failed
+
+**Note:** This step adds ~10-15s to validation time but catches deploy blockers early.
+
+---
+
 #### Step 4: Run Frontend Tests
 
 ```bash
@@ -260,6 +287,13 @@ grep -r "DebateCreateRequest" types/ app/
 - **Errors:** 0
 - **Status:** PASS
 
+### Production Build
+- **Command:** `npm run build`
+- **Status:** PASS | FAIL
+- **Build Time:** 12.3s
+- **Warnings:** 0
+- **Errors:** [If any]
+
 ### Tests
 - **Command:** `npm test -- --run --coverage`
 - **Tests Run:** 218
@@ -302,6 +336,7 @@ grep -r "DebateCreateRequest" types/ app/
 |------|--------|-------|
 | No debug code | ✓ PASS | Clean |
 | Linters pass | ✓ PASS | Black not configured (warning) |
+| Production build | ✓ PASS | Frontend builds successfully (12.3s) |
 | All tests pass | ✓ PASS | Backend: 169/169, Frontend: 218/218 |
 | Coverage maintained | ✓ PASS | +0.32% backend, +0.4% frontend |
 | Type safety | ✓ PASS | No ignores added |
@@ -394,6 +429,7 @@ All files                     |   63.2  |   89.82  |  83.1   |  63.2
 - [ ] No console.log/debugger (excluding tests/comments)
 - [ ] ESLint: 0 errors (warnings OK)
 - [ ] TypeScript: 0 errors
+- [ ] Production build: succeeds (exit code 0)
 - [ ] All tests pass
 - [ ] Coverage ≥ baseline (no decrease)
 - [ ] No new @ts-ignore comments
@@ -409,6 +445,7 @@ All files                     |   63.2  |   89.82  |  83.1   |  63.2
 - Coverage decrease
 - Linter errors (not warnings)
 - Type errors
+- Production build errors (frontend)
 - Debug code present
 - Breaking changes without versioning
 
