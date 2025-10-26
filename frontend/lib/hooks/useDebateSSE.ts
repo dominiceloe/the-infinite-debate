@@ -90,8 +90,32 @@ export function useDebateSSE({
               queryClient.invalidateQueries({ queryKey: ['debate', slug] });
             }
           } else if (message.type === 'message') {
-            // Trigger refetch to get new message with full data
-            queryClient.invalidateQueries({ queryKey: ['debate', slug] });
+            // Optimistically add message to cache for real-time display
+            queryClient.setQueryData(['debate', slug], (old: Debate | undefined) => {
+              if (!old) return old;
+
+              // Check if message already exists (avoid duplicates)
+              const messageExists = old.messages?.some(m => m.id === message.message_id);
+              if (messageExists) return old;
+
+              // Create new message object from SSE event data
+              const newMessage = {
+                id: message.message_id!,
+                round_number: message.round_number!,
+                content: message.content!,
+                persona: {
+                  name: message.persona_name!,
+                  slug: message.persona_slug!,
+                },
+                created_at: new Date().toISOString(),
+              };
+
+              // Return updated debate with new message appended
+              return {
+                ...old,
+                messages: [...(old.messages || []), newMessage],
+              };
+            });
           }
         } catch (err) {
           console.error('Failed to parse SSE message:', err);
