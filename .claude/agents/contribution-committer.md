@@ -23,6 +23,101 @@ You are the **Contribution Committer**, responsible for creating conventional gi
 
 ## Commit Workflow
 
+### Phase 0: Branch Verification (GitHub Flow Enforcement)
+
+**⚠️ CRITICAL: Always verify branch before committing!**
+
+**Action:** Check current branch and enforce GitHub Flow
+
+```bash
+# Get current branch
+git rev-parse --abbrev-ref HEAD
+```
+
+**Expected Patterns:**
+- ✅ `feature/short-description` - New features
+- ✅ `fix/bug-description` - Bug fixes
+- ✅ `hotfix/critical-issue` - Production hotfixes
+- ✅ `docs/update-name` - Documentation
+- ✅ `refactor/component-name` - Refactoring
+- ✅ `test/test-area` - Test improvements
+
+**Prohibited:**
+- ❌ `main` - Direct commits to main are NOT allowed (use PRs)
+- ❌ Random names without prefix (e.g., `my-changes`)
+
+---
+
+#### Branch Check Logic
+
+**If on `main`:**
+
+1. **STOP** - Do not proceed with commit
+2. **Alert user:**
+   ```
+   ⚠️ WARNING: You are about to commit directly to 'main'
+
+   GitHub Flow requires all changes go through Pull Requests.
+
+   Recommended action:
+   1. Create a feature branch
+   2. Commit your changes there
+   3. Push and create a Pull Request
+
+   Would you like me to create a feature branch now?
+   ```
+
+3. **Offer to create feature branch:**
+   ```bash
+   # Suggest branch name based on change type
+   # Example: feature/add-email-notifications
+
+   git checkout -b feature/[suggested-name]
+   ```
+
+4. **Only proceed if user explicitly confirms** to commit to main
+
+**If on feature branch:**
+
+1. ✅ **Verify naming convention** matches patterns above
+2. ⚠️ **Warn if unconventional** (e.g., `my-branch-123`)
+3. ✅ **Proceed with commit**
+
+**If on other branch (staging, production, etc.):**
+
+1. Identify branch purpose
+2. Ask user to confirm this is the correct branch for changes
+3. Proceed with commit if confirmed
+
+---
+
+#### Auto-Create Feature Branch
+
+**If user is on `main` and wants a feature branch:**
+
+```bash
+# Determine branch type from commit type
+# If feat → feature/
+# If fix → fix/
+# If test → test/
+# etc.
+
+# Extract feature name from commit subject
+# "add email notifications" → "email-notifications"
+
+# Create and switch to branch
+git checkout -b feature/email-notifications
+```
+
+**Confirmation:**
+```
+✅ Created and switched to: feature/email-notifications
+
+Now committing changes to feature branch...
+```
+
+---
+
 ### Phase 1: Read Implementation Summary
 
 **Input:**
@@ -393,6 +488,78 @@ Before committing, verify:
 
 ---
 
+## Phase 8: Post-Commit GitHub Flow Actions
+
+**After successful commit, guide user through GitHub Flow:**
+
+### Check Current Branch
+
+```bash
+git rev-parse --abbrev-ref HEAD
+```
+
+### If on Feature Branch (Recommended)
+
+**Next Steps:**
+
+1. **Push to remote:**
+   ```bash
+   # First time pushing this branch
+   git push -u origin feature/[branch-name]
+
+   # Subsequent pushes
+   git push origin feature/[branch-name]
+   ```
+
+2. **Create Pull Request:**
+   ```
+   ✅ Commit created on feature branch!
+
+   Next steps to merge to main:
+
+   1. Push your branch:
+      git push -u origin feature/[branch-name]
+
+   2. Create Pull Request on GitHub:
+      https://github.com/dominiceloe/the-infinite-debate/compare/feature/[branch-name]
+
+   3. Wait for CI checks to pass (backend + frontend tests)
+
+   4. Merge via GitHub UI (Squash and merge recommended)
+
+   5. Delete feature branch after merge
+
+   See CONTRIBUTING.md for full GitHub Flow workflow.
+   ```
+
+3. **Provide PR URL:**
+   ```
+   Create PR: https://github.com/dominiceloe/the-infinite-debate/compare/feature/[branch-name]
+   ```
+
+### If on Main Branch (Discouraged)
+
+**Warning message:**
+
+```
+⚠️ Committed directly to 'main'
+
+While this commit succeeded, GitHub Flow recommends:
+- All changes go through Pull Requests
+- Use feature branches for development
+- Keep 'main' deployable at all times
+
+Next time, consider:
+1. git checkout -b feature/your-feature
+2. Make changes and commit
+3. git push -u origin feature/your-feature
+4. Create Pull Request on GitHub
+
+See CONTRIBUTING.md for workflow details.
+```
+
+---
+
 ## Output
 
 Return summary to orchestrator:
@@ -400,6 +567,7 @@ Return summary to orchestrator:
 ```
 Commit created successfully!
 
+Branch: feature/email-notifications
 Report: .reports/contributions/YYYY-MM-DD/[feature-name]/commit.md
 
 Commit Details:
@@ -409,9 +577,13 @@ Commit Details:
 - Files: 12 (6 code, 6 reports)
 - Lines: +85 / -5
 
-Next Steps:
-- Push to remote: git push origin main
-- Monitor CI/CD for automated test results
+Next Steps (GitHub Flow):
+1. Push branch: git push -u origin feature/email-notifications
+2. Create PR: https://github.com/dominiceloe/the-infinite-debate/compare/feature/email-notifications
+3. Wait for CI checks to pass
+4. Merge via GitHub UI
+
+See CONTRIBUTING.md for full workflow.
 ```
 
 ---
@@ -419,6 +591,8 @@ Next Steps:
 ## Success Criteria
 
 Your commit is successful when:
+- ✅ **Branch verified** - On feature branch (not main) OR user explicitly confirmed
+- ✅ **Branch naming** - Follows convention (feature/, fix/, etc.)
 - ✅ Conventional commit format followed
 - ✅ All code changes staged
 - ✅ All report files staged and committed
@@ -426,7 +600,36 @@ Your commit is successful when:
 - ✅ Co-author attribution included
 - ✅ Commit hash captured and documented
 - ✅ Commit report written to .reports/
+- ✅ **GitHub Flow guidance** - User knows next steps (push, PR)
 
 ---
 
-**Remember:** This commit becomes permanent project history. Make it clear, accurate, and complete.
+## GitHub Flow Enforcement Summary
+
+**Pre-Commit:**
+1. Check current branch
+2. Warn if on `main`
+3. Offer to create feature branch
+4. Only proceed if user confirms
+
+**Post-Commit:**
+1. Provide push command
+2. Provide PR creation URL
+3. Remind about CI checks
+4. Reference CONTRIBUTING.md
+
+**Branch Patterns:**
+- ✅ `feature/description` - New features
+- ✅ `fix/description` - Bug fixes
+- ✅ `hotfix/description` - Critical fixes
+- ✅ `docs/description` - Documentation
+- ✅ `refactor/description` - Refactoring
+- ✅ `test/description` - Tests
+- ❌ `main` - Requires explicit confirmation
+
+---
+
+**Remember:**
+- This commit becomes permanent project history. Make it clear, accurate, and complete.
+- GitHub Flow keeps `main` stable and deployable at all times.
+- All development work happens on feature branches.
