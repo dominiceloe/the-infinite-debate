@@ -476,6 +476,82 @@ describe('API Client', () => {
         expect(result).toEqual(mockResponse)
       })
 
+      it('creates checkout with monthly billing by default', async () => {
+        const mockResponse = {
+          checkout_url: 'https://checkout.stripe.com/session123',
+          session_id: 'cs_test_123',
+          is_upgrade: false,
+        }
+
+        mockPost.mockResolvedValueOnce({ data: mockResponse })
+
+        const result = await apiClient.payments.createCheckout({
+          tier: 'starter',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+
+        expect(result).toEqual(mockResponse)
+        // billing_period not sent = defaults to monthly on backend
+        expect(mockPost).toHaveBeenCalledWith('/payments/create-checkout/', {
+          tier: 'starter',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+      })
+
+      it('creates checkout with yearly billing when specified', async () => {
+        const mockResponse = {
+          checkout_url: 'https://checkout.stripe.com/session_yearly',
+          session_id: 'cs_test_yearly',
+          is_upgrade: false,
+        }
+
+        mockPost.mockResolvedValueOnce({ data: mockResponse })
+
+        const result = await apiClient.payments.createCheckout({
+          tier: 'pro',
+          billing_period: 'yearly',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+
+        expect(result).toEqual(mockResponse)
+
+        // Verify billing_period was sent
+        expect(mockPost).toHaveBeenCalledWith('/payments/create-checkout/', {
+          tier: 'pro',
+          billing_period: 'yearly',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+      })
+
+      it('creates checkout with monthly billing when explicitly specified', async () => {
+        const mockResponse = {
+          checkout_url: 'https://checkout.stripe.com/session_monthly',
+          session_id: 'cs_test_monthly',
+          is_upgrade: false,
+        }
+
+        mockPost.mockResolvedValueOnce({ data: mockResponse })
+
+        const result = await apiClient.payments.createCheckout({
+          tier: 'starter',
+          billing_period: 'monthly',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+
+        expect(result).toEqual(mockResponse)
+        expect(mockPost).toHaveBeenCalledWith('/payments/create-checkout/', {
+          tier: 'starter',
+          billing_period: 'monthly',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+      })
+
       it('handles upgrade scenario', async () => {
         const mockResponse = {
           is_upgrade: true,
@@ -493,6 +569,59 @@ describe('API Client', () => {
         })
 
         expect(result.is_upgrade).toBe(true)
+      })
+
+      it('handles upgrade with billing period change', async () => {
+        const mockResponse = {
+          is_upgrade: true,
+          message: 'Subscription updated successfully',
+          tier: 'starter',
+          old_tier: 'starter',
+        }
+
+        mockPost.mockResolvedValueOnce({ data: mockResponse })
+
+        const result = await apiClient.payments.createCheckout({
+          tier: 'starter',
+          billing_period: 'yearly', // Switching from monthly to yearly
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+
+        expect(result.is_upgrade).toBe(true)
+        expect(mockPost).toHaveBeenCalledWith('/payments/create-checkout/', {
+          tier: 'starter',
+          billing_period: 'yearly',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+      })
+
+      it('handles upgrade with both tier and billing period change', async () => {
+        const mockResponse = {
+          is_upgrade: true,
+          message: 'Subscription updated successfully',
+          tier: 'pro',
+          old_tier: 'starter',
+        }
+
+        mockPost.mockResolvedValueOnce({ data: mockResponse })
+
+        const result = await apiClient.payments.createCheckout({
+          tier: 'pro',
+          billing_period: 'yearly',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
+
+        expect(result.is_upgrade).toBe(true)
+        expect(result.tier).toBe('pro')
+        expect(mockPost).toHaveBeenCalledWith('/payments/create-checkout/', {
+          tier: 'pro',
+          billing_period: 'yearly',
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+        })
       })
     })
 

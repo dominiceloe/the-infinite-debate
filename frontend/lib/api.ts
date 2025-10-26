@@ -170,7 +170,12 @@ export const apiClient = {
 
   // Payments
   payments: {
-    createCheckout: async (data: { tier: 'starter' | 'pro'; success_url: string; cancel_url: string }): Promise<{
+    createCheckout: async (data: {
+      tier: 'starter' | 'pro';
+      billing_period?: 'monthly' | 'yearly';  // NEW: optional billing period
+      success_url: string;
+      cancel_url: string;
+    }): Promise<{
       checkout_url?: string;
       session_id?: string;
       is_upgrade?: boolean;

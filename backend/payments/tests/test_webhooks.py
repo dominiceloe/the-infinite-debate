@@ -1056,3 +1056,257 @@ class TestCreditAllocation:
         # Should be approximately 30 days from now
         expected_reset = timezone.now().date() + timedelta(days=30)
         assert test_user_with_stripe.credits_reset_date == expected_reset
+
+
+@pytest.mark.django_db
+class TestWebhooksWithAnnualBilling:
+    """Test webhook handlers recognize all 4 price IDs (monthly/yearly for each tier)."""
+
+    @patch('stripe.Webhook.construct_event')
+    def test_subscription_created_starter_yearly(
+        self, mock_construct_event, webhook_client, test_user_with_stripe
+    ):
+        """Test subscription creation with starter yearly price ID."""
+        event = {
+            'id': 'evt_starter_yearly',
+            'type': 'customer.subscription.created',
+            'data': {
+                'object': {
+                    'id': 'sub_starter_yearly',
+                    'customer': test_user_with_stripe.stripe_customer_id,
+                    'status': 'active',
+                    'items': {
+                        'data': [{
+                            'price': {
+                                'id': settings.STRIPE_STARTER_YEARLY_PRICE_ID
+                            }
+                        }]
+                    }
+                }
+            }
+        }
+        mock_construct_event.return_value = event
+
+        response = webhook_client.post(
+            '/api/payments/webhook/',
+            data=json.dumps({'test': 'data'}),
+            content_type='application/json',
+            HTTP_STRIPE_SIGNATURE='valid_signature'
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        test_user_with_stripe.refresh_from_db()
+        assert test_user_with_stripe.subscription_tier == 'starter'
+        assert test_user_with_stripe.credits_remaining == 30
+
+    @patch('stripe.Webhook.construct_event')
+    def test_subscription_created_pro_yearly(
+        self, mock_construct_event, webhook_client, test_user_with_stripe
+    ):
+        """Test subscription creation with pro yearly price ID."""
+        event = {
+            'id': 'evt_pro_yearly',
+            'type': 'customer.subscription.created',
+            'data': {
+                'object': {
+                    'id': 'sub_pro_yearly',
+                    'customer': test_user_with_stripe.stripe_customer_id,
+                    'status': 'active',
+                    'items': {
+                        'data': [{
+                            'price': {
+                                'id': settings.STRIPE_PRO_YEARLY_PRICE_ID
+                            }
+                        }]
+                    }
+                }
+            }
+        }
+        mock_construct_event.return_value = event
+
+        response = webhook_client.post(
+            '/api/payments/webhook/',
+            data=json.dumps({'test': 'data'}),
+            content_type='application/json',
+            HTTP_STRIPE_SIGNATURE='valid_signature'
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        test_user_with_stripe.refresh_from_db()
+        assert test_user_with_stripe.subscription_tier == 'pro'
+        assert test_user_with_stripe.credits_remaining == 100
+
+    @patch('stripe.Webhook.construct_event')
+    def test_subscription_created_starter_monthly(
+        self, mock_construct_event, webhook_client, test_user_with_stripe
+    ):
+        """Test subscription creation with starter monthly price ID."""
+        event = {
+            'id': 'evt_starter_monthly',
+            'type': 'customer.subscription.created',
+            'data': {
+                'object': {
+                    'id': 'sub_starter_monthly',
+                    'customer': test_user_with_stripe.stripe_customer_id,
+                    'status': 'active',
+                    'items': {
+                        'data': [{
+                            'price': {
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
+                            }
+                        }]
+                    }
+                }
+            }
+        }
+        mock_construct_event.return_value = event
+
+        response = webhook_client.post(
+            '/api/payments/webhook/',
+            data=json.dumps({'test': 'data'}),
+            content_type='application/json',
+            HTTP_STRIPE_SIGNATURE='valid_signature'
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        test_user_with_stripe.refresh_from_db()
+        assert test_user_with_stripe.subscription_tier == 'starter'
+        assert test_user_with_stripe.credits_remaining == 30
+
+    @patch('stripe.Webhook.construct_event')
+    def test_subscription_created_pro_monthly(
+        self, mock_construct_event, webhook_client, test_user_with_stripe
+    ):
+        """Test subscription creation with pro monthly price ID."""
+        event = {
+            'id': 'evt_pro_monthly',
+            'type': 'customer.subscription.created',
+            'data': {
+                'object': {
+                    'id': 'sub_pro_monthly',
+                    'customer': test_user_with_stripe.stripe_customer_id,
+                    'status': 'active',
+                    'items': {
+                        'data': [{
+                            'price': {
+                                'id': settings.STRIPE_PRO_MONTHLY_PRICE_ID
+                            }
+                        }]
+                    }
+                }
+            }
+        }
+        mock_construct_event.return_value = event
+
+        response = webhook_client.post(
+            '/api/payments/webhook/',
+            data=json.dumps({'test': 'data'}),
+            content_type='application/json',
+            HTTP_STRIPE_SIGNATURE='valid_signature'
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        test_user_with_stripe.refresh_from_db()
+        assert test_user_with_stripe.subscription_tier == 'pro'
+        assert test_user_with_stripe.credits_remaining == 100
+
+    @patch('stripe.Webhook.construct_event')
+    def test_subscription_updated_from_monthly_to_yearly(
+        self, mock_construct_event, webhook_client, test_user_with_stripe
+    ):
+        """Test subscription update recognizes billing period change (same tier)."""
+        # Set initial state to starter monthly
+        test_user_with_stripe.subscription_tier = 'starter'
+        test_user_with_stripe.credits_remaining = 10
+        test_user_with_stripe.save()
+
+        event = {
+            'id': 'evt_billing_change',
+            'type': 'customer.subscription.updated',
+            'data': {
+                'object': {
+                    'id': 'sub_billing_change',
+                    'customer': test_user_with_stripe.stripe_customer_id,
+                    'status': 'active',
+                    'items': {
+                        'data': [{
+                            'price': {
+                                'id': settings.STRIPE_STARTER_YEARLY_PRICE_ID
+                            }
+                        }]
+                    }
+                }
+            }
+        }
+        mock_construct_event.return_value = event
+
+        response = webhook_client.post(
+            '/api/payments/webhook/',
+            data=json.dumps({'test': 'data'}),
+            content_type='application/json',
+            HTTP_STRIPE_SIGNATURE='valid_signature'
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        # Verify tier stays the same but credits reset
+        test_user_with_stripe.refresh_from_db()
+        assert test_user_with_stripe.subscription_tier == 'starter'
+        assert test_user_with_stripe.credits_remaining == 30
+
+    @patch('stripe.Webhook.construct_event')
+    def test_subscription_updated_tier_and_billing_period(
+        self, mock_construct_event, webhook_client, test_user_with_stripe
+    ):
+        """Test subscription update with both tier and billing period change."""
+        # Set initial state to starter monthly
+        test_user_with_stripe.subscription_tier = 'starter'
+        test_user_with_stripe.credits_remaining = 5
+        test_user_with_stripe.save()
+
+        event = {
+            'id': 'evt_full_upgrade',
+            'type': 'customer.subscription.updated',
+            'data': {
+                'object': {
+                    'id': 'sub_full_upgrade',
+                    'customer': test_user_with_stripe.stripe_customer_id,
+                    'status': 'active',
+                    'items': {
+                        'data': [{
+                            'price': {
+                                'id': settings.STRIPE_PRO_YEARLY_PRICE_ID
+                            }
+                        }]
+                    }
+                }
+            }
+        }
+        mock_construct_event.return_value = event
+
+        response = webhook_client.post(
+            '/api/payments/webhook/',
+            data=json.dumps({'test': 'data'}),
+            content_type='application/json',
+            HTTP_STRIPE_SIGNATURE='valid_signature'
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        # Verify both tier and credits updated
+        test_user_with_stripe.refresh_from_db()
+        assert test_user_with_stripe.subscription_tier == 'pro'
+        assert test_user_with_stripe.credits_remaining == 100
+
+        # Verify history was logged
+        history = StripeSubscriptionHistory.objects.filter(
+            user=test_user_with_stripe,
+            action='updated'
+        ).first()
+        assert history is not None
+        assert history.metadata['old_tier'] == 'starter'
+        assert history.metadata['new_tier'] == 'pro'
