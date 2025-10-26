@@ -336,7 +336,7 @@ export default function PricingPage() {
                 const features = tierTemplate.featuresTemplate(personaCount);
 
                 return (
-                  <Grid item xs={12} sm={6} md={6} lg={3} key={tierTemplate.name}>
+                  <Grid size={{ xs: 12, sm: 6, md: 6, lg: 3 }} key={tierTemplate.name}>
                     <Card
                       sx={{
                         height: '100%',
@@ -527,7 +527,7 @@ export default function PricingPage() {
               <Card sx={{ bgcolor: 'grey.50', border: 'none' }}>
                 <CardContent sx={{ p: 4 }}>
                   <Grid container spacing={3} justifyContent="center">
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
                         1
@@ -540,7 +540,7 @@ export default function PricingPage() {
                       </Typography>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
                         3
@@ -553,7 +553,7 @@ export default function PricingPage() {
                       </Typography>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
                         8
@@ -566,7 +566,7 @@ export default function PricingPage() {
                       </Typography>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
                         20

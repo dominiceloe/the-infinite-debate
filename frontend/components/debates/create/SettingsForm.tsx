@@ -15,7 +15,7 @@ export interface SettingsFormProps {
   maxRounds: number;
   onDepthLevelChange: (depthLevel: 'introductory' | 'intermediate' | 'advanced') => void;
   onMaxRoundsChange: (maxRounds: number) => void;
-  allowedDepths: string[];
+  allowedDepths: readonly string[];
   maxRoundsLimit: number;
 }
 

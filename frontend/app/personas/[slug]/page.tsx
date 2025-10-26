@@ -84,7 +84,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
 
   const categoryInfo = getCategoryInfo(persona.category);
   const hasAccess = hasPersonaAccess(user?.subscription_tier, persona.required_tier);
-  const badge = getTierBadge(persona.required_tier);
+  const badge = getTierBadge(persona.required_tier, user?.subscription_tier);
 
   // Get tier display name
   const getTierDisplayName = (tier?: string) => {
@@ -358,7 +358,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
                   <Grid container spacing={3}>
                     {/* Primary Works */}
                     {persona.external_links.primary_works && persona.external_links.primary_works.length > 0 && (
-                      <Grid item xs={12} md={6}>
+                      <Grid size={{ xs: 12, md: 6 }}>
                         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
                           📚 Primary Works
                         </Typography>
@@ -390,7 +390,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
 
                     {/* Academic Resources */}
                     {persona.external_links.academic && persona.external_links.academic.length > 0 && (
-                      <Grid item xs={12} md={6}>
+                      <Grid size={{ xs: 12, md: 6 }}>
                         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
                           🎓 Academic Resources
                         </Typography>
@@ -422,7 +422,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
 
                     {/* Wikipedia */}
                     {persona.external_links.wikipedia && (
-                      <Grid item xs={12} md={6}>
+                      <Grid size={{ xs: 12, md: 6 }}>
                         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
                           📖 Wikipedia
                         </Typography>
@@ -448,7 +448,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
 
                     {/* Stanford Encyclopedia */}
                     {persona.external_links.stanford_encyclopedia && (
-                      <Grid item xs={12} md={6}>
+                      <Grid size={{ xs: 12, md: 6 }}>
                         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
                           🏛️ Stanford Encyclopedia
                         </Typography>
@@ -474,7 +474,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
 
                     {/* Modern Resources */}
                     {persona.external_links.modern && persona.external_links.modern.length > 0 && (
-                      <Grid item xs={12}>
+                      <Grid size={{ xs: 12 }}>
                         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
                           🎥 Modern Resources
                         </Typography>

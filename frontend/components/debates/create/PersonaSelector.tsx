@@ -26,7 +26,7 @@ export interface PersonaSelectorProps {
   maxParticipants: number;
   user: {
     subscription_tier?: string;
-  };
+  } | null;
 }
 
 const PersonaSelector = memo(({
