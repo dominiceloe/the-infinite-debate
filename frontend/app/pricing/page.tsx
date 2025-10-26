@@ -34,7 +34,7 @@ import { Playfair_Display } from 'next/font/google';
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700'] });
 
-type BillingPeriod = 'monthly' | 'annual';
+type BillingPeriod = 'monthly' | 'yearly';
 
 interface PricingTierTemplate {
   name: string;
@@ -307,9 +307,9 @@ export default function PricingPage() {
               }}
             >
               <ToggleButton value="monthly">Monthly</ToggleButton>
-              <ToggleButton value="annual">Annual</ToggleButton>
+              <ToggleButton value="yearly">Annual</ToggleButton>
             </ToggleButtonGroup>
-            {billingPeriod === 'annual' && (
+            {billingPeriod === 'yearly' && (
               <Chip
                 label="Save up to 25%"
                 color="success"
@@ -417,7 +417,7 @@ export default function PricingPage() {
                                   /{billingPeriod === 'monthly' ? 'month' : 'year'}
                                 </Typography>
                               </Box>
-                              {billingPeriod === 'annual' && (
+                              {billingPeriod === 'yearly' && (
                                 <Typography variant="caption" color="text.secondary">
                                   ${(tierTemplate.annualPrice / 12).toFixed(2)}/month billed annually
                                 </Typography>
