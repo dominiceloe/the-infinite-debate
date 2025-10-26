@@ -34,7 +34,7 @@ import { Playfair_Display } from 'next/font/google';
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700'] });
 
-type BillingPeriod = 'monthly' | 'annual';
+type BillingPeriod = 'monthly' | 'yearly';
 
 interface PricingTierTemplate {
   name: string;
@@ -205,6 +205,7 @@ export default function PricingPage() {
     try {
       const response = await apiClient.payments.createCheckout({
         tier,
+        billing_period: billingPeriod,  // NEW: pass current billing period selection
         success_url: `${window.location.origin}/account?payment=success`,
         cancel_url: `${window.location.origin}/pricing?payment=cancelled`,
       });
@@ -306,9 +307,9 @@ export default function PricingPage() {
               }}
             >
               <ToggleButton value="monthly">Monthly</ToggleButton>
-              <ToggleButton value="annual">Annual</ToggleButton>
+              <ToggleButton value="yearly">Annual</ToggleButton>
             </ToggleButtonGroup>
-            {billingPeriod === 'annual' && (
+            {billingPeriod === 'yearly' && (
               <Chip
                 label="Save up to 25%"
                 color="success"
@@ -416,7 +417,7 @@ export default function PricingPage() {
                                   /{billingPeriod === 'monthly' ? 'month' : 'year'}
                                 </Typography>
                               </Box>
-                              {billingPeriod === 'annual' && (
+                              {billingPeriod === 'yearly' && (
                                 <Typography variant="caption" color="text.secondary">
                                   ${(tierTemplate.annualPrice / 12).toFixed(2)}/month billed annually
                                 </Typography>
@@ -639,7 +640,7 @@ export default function PricingPage() {
                     Current Plan
                   </Typography>
                   <Typography variant="h6" sx={{ mb: 1 }}>
-                    {currentTierDetails?.name || currentTier} - ${billingPeriod === 'monthly' ? currentTierDetails?.monthlyPrice : currentTierDetails?.annualPrice}/mo
+                    {currentTierDetails?.name || currentTier} - ${billingPeriod === 'monthly' ? currentTierDetails?.monthlyPrice : currentTierDetails?.annualPrice}/{billingPeriod === 'monthly' ? 'mo' : 'yr'}
                   </Typography>
                   <Typography variant="body2">
                     {subscriptionData?.credits_remaining || 0} credits remaining
@@ -655,7 +656,7 @@ export default function PricingPage() {
                     New Plan
                   </Typography>
                   <Typography variant="h6" sx={{ mb: 1 }}>
-                    {newTierDetails?.name} - ${billingPeriod === 'monthly' ? newTierDetails?.monthlyPrice : newTierDetails?.annualPrice}/mo
+                    {newTierDetails?.name} - ${billingPeriod === 'monthly' ? newTierDetails?.monthlyPrice : newTierDetails?.annualPrice}/{billingPeriod === 'monthly' ? 'mo' : 'yr'}
                   </Typography>
                   <Typography variant="body2">
                     {newTierDetails?.credits} credits per month
