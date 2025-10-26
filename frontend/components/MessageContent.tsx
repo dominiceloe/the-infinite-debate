@@ -5,7 +5,6 @@ import type { TextCitation } from '@/types';
 interface MessageContentProps {
   content: string;
   citations?: TextCitation[];
-  sx?: any;
 }
 
 /**
@@ -14,7 +13,7 @@ interface MessageContentProps {
  * Takes clean content (without {Title} markers) and citations array,
  * then renders citation titles as clickable links to the primary texts.
  */
-export default function MessageContent({ content, citations, sx }: MessageContentProps) {
+export default function MessageContent({ content, citations }: MessageContentProps) {
   if (!citations || citations.length === 0) {
     return <>{content}</>;
   }
