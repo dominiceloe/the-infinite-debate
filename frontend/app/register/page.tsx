@@ -19,6 +19,7 @@ import {
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import type { RegisterRequest } from '@/types/auth';
+import type { StripeCardChangeEvent } from '@/types/api';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import LockIcon from '@mui/icons-material/Lock';
 
@@ -70,7 +71,7 @@ function RegisterForm() {
     }));
   };
 
-  const handleCardChange = (event: any) => {
+  const handleCardChange = (event: StripeCardChangeEvent) => {
     setCardError(event.error ? event.error.message : '');
     setCardComplete(event.complete);
   };
@@ -217,7 +218,7 @@ function RegisterForm() {
                 Free 7-Day Trial
               </Typography>
               <Typography variant="caption">
-                Get 15 free credits to create debates. Credit card required, but you won't be charged until trial ends.
+                Get 15 free credits to create debates. Credit card required, but you won&apos;t be charged until trial ends.
               </Typography>
             </Alert>
 
@@ -346,7 +347,7 @@ function RegisterForm() {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, mt: 1 }}>
                 <LockIcon sx={{ fontSize: 14, mr: 0.5, color: 'text.secondary' }} />
                 <Typography variant="caption" color="text.secondary">
-                  Your payment information is encrypted and secure. You won't be charged until your 7-day trial ends.
+                  Your payment information is encrypted and secure. You won&apos;t be charged until your 7-day trial ends.
                 </Typography>
               </Box>
 

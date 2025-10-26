@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { use, useState } from 'react';
-import type { Persona, PrimaryText } from '@/types';
+import type { Persona, PrimaryText, ExternalLink } from '@/types';
 import Image from 'next/image';
 import { Playfair_Display } from 'next/font/google';
 import ReactMarkdown from 'react-markdown';
@@ -339,7 +339,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
             Object.keys(persona.external_links).some(key =>
               key === 'wikipedia' || key === 'stanford_encyclopedia'
                 ? persona.external_links![key as keyof typeof persona.external_links]
-                : (persona.external_links![key as keyof typeof persona.external_links] as any[])?.length > 0
+                : (persona.external_links![key as keyof typeof persona.external_links] as ExternalLink[])?.length > 0
             ) && (
               <Card sx={{ mb: 3 }}>
                 <CardContent sx={{ p: { xs: 3, md: 4 } }}>

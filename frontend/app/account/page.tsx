@@ -12,7 +12,6 @@ import {
   Chip,
   Divider,
   Alert,
-  Tooltip,
   Avatar,
   CircularProgress,
   Dialog,
@@ -44,12 +43,15 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import InfoIcon from '@mui/icons-material/Info';
 import PeopleIcon from '@mui/icons-material/People';
 import CancelIcon from '@mui/icons-material/Cancel';
+import type { Persona } from '@/types';
+import type { PaymentRecord } from '@/types/api';
+import { AxiosError } from 'axios';
 
 interface UserStats {
   total_debates: number;
   total_credits_used: number;
   most_used_personas: Array<{
-    persona: any;
+    persona: Persona;
     times_used: number;
   }>;
   favorite_categories: Array<{
@@ -133,10 +135,11 @@ function AccountPageContent() {
       });
       setCancelDialog(false);
       refetchSubscription();
-    } catch (error: any) {
+    } catch (error) {
+      const axiosError = error as AxiosError<{ error?: string }>;
       setSnackbar({
         open: true,
-        message: error.response?.data?.error || 'Failed to cancel subscription. Please try again.',
+        message: axiosError.response?.data?.error || 'Failed to cancel subscription. Please try again.',
         severity: 'error',
       });
     } finally {
@@ -650,7 +653,7 @@ function AccountPageContent() {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {paymentsData.slice(0, 5).map((payment: any) => (
+                          {paymentsData.slice(0, 5).map((payment: PaymentRecord) => (
                             <TableRow key={payment.id}>
                               <TableCell>
                                 {new Date(payment.created_at).toLocaleDateString('en-US', {
@@ -761,7 +764,7 @@ function AccountPageContent() {
                             month: 'long',
                             day: 'numeric',
                           })}
-                        . You'll retain access until then.
+                        . You&apos;ll retain access until then.
                       </Typography>
                     </Alert>
                   )}
@@ -804,15 +807,15 @@ function AccountPageContent() {
                 month: 'long',
                 day: 'numeric',
               })}
-              . After that, you'll be downgraded to the trial tier.
+              . After that, you&apos;ll be downgraded to the trial tier.
             </Alert>
           )}
 
           <Alert severity="warning">
             <strong>What happens after cancellation:</strong>
             <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
-              <li>You'll keep your current credits until the end of the billing period</li>
-              <li>After the period ends, you'll be moved to the trial tier (15 credits)</li>
+              <li>You&apos;ll keep your current credits until the end of the billing period</li>
+              <li>After the period ends, you&apos;ll be moved to the trial tier (15 credits)</li>
               <li>Your debates and data will be preserved</li>
               <li>You can resubscribe anytime</li>
             </ul>

@@ -8,6 +8,13 @@ import type {
   PersonaRequest,
   CreatePersonaRequestRequest,
 } from '@/types';
+import type {
+  ThrottleErrorResponse,
+  ThrottleError,
+  DebateGenerationResponse,
+  SubscriptionDetails,
+  PaymentRecord,
+} from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api';
 
@@ -43,12 +50,12 @@ api.interceptors.response.use(
 
     // Handle rate limiting (429 errors)
     if (error.response?.status === 429) {
-      const data = error.response.data as any;
+      const data = error.response.data as ThrottleErrorResponse;
 
       // Create a custom error with user-friendly message
       const throttleError = new Error(
         data.message || 'Too many requests. Please try again later.'
-      ) as any;
+      ) as ThrottleError;
       throttleError.isThrottled = true;
       throttleError.retryAfter = data.retry_after_display || data.retry_after_seconds;
       throttleError.retryAfterSeconds = data.retry_after_seconds;
@@ -142,8 +149,8 @@ export const apiClient = {
       return response.data;
     },
 
-    generate: async (slug: string): Promise<any> => {
-      const response = await api.post(`/debates/${slug}/generate/`);
+    generate: async (slug: string): Promise<DebateGenerationResponse> => {
+      const response = await api.post<DebateGenerationResponse>(`/debates/${slug}/generate/`);
       return response.data;
     },
 
@@ -194,18 +201,18 @@ export const apiClient = {
       return response.data;
     },
 
-    getSubscription: async (): Promise<any> => {
-      const response = await api.get('/payments/subscription/');
+    getSubscription: async (): Promise<SubscriptionDetails> => {
+      const response = await api.get<SubscriptionDetails>('/payments/subscription/');
       return response.data;
     },
 
-    cancelSubscription: async (): Promise<any> => {
-      const response = await api.post('/payments/subscription/cancel/');
+    cancelSubscription: async (): Promise<{ message: string; status: string }> => {
+      const response = await api.post<{ message: string; status: string }>('/payments/subscription/cancel/');
       return response.data;
     },
 
-    getHistory: async (): Promise<any[]> => {
-      const response = await api.get('/payments/history/');
+    getHistory: async (): Promise<PaymentRecord[]> => {
+      const response = await api.get<PaymentRecord[]>('/payments/history/');
       return response.data;
     },
   },

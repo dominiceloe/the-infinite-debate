@@ -6,7 +6,6 @@ import {
   Box,
   Container,
   Typography,
-  Grid,
   Card,
   CardContent,
   CardActions,
@@ -19,7 +18,6 @@ import {
   Chip,
   CircularProgress,
   Alert,
-  Paper,
 } from "@mui/material";
 import { Book, Person, CalendarMonth, MenuBook } from "@mui/icons-material";
 import Link from "next/link";

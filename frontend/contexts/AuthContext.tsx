@@ -6,7 +6,6 @@ import axios from 'axios';
 import type {
   User,
   AuthContextType,
-  LoginResponse,
   RegisterRequest,
   RegisterResponse,
 } from '@/types/auth';
@@ -94,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (errors && typeof errors === 'object') {
           // Extract error messages from validation errors
           const errorMessages = Object.entries(errors)
-            .map(([field, messages]) => {
+            .map(([, messages]) => {
               if (Array.isArray(messages)) {
                 return messages.join(' ');
               }
