@@ -201,7 +201,7 @@ function MyRequestsPageContent() {
             {requests.map((request) => {
               const statusInfo = getStatusInfo(request.status);
               return (
-                <Grid item xs={12} key={request.id}>
+                <Grid size={{ xs: 12 }} key={request.id}>
                   <Card
                     sx={{
                       transition: 'all 0.2s',
@@ -228,7 +228,7 @@ function MyRequestsPageContent() {
                           </Typography>
                         </Box>
                         <Chip
-                          icon={statusInfo.icon}
+                          {...(statusInfo.icon && { icon: statusInfo.icon })}
                           label={statusInfo.label}
                           color={statusInfo.color}
                           sx={{
