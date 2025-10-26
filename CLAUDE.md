@@ -406,8 +406,10 @@ For all code changes, use the structured contribution workflow:
 2. **Approval Gate** - User reviews plan before proceeding
 3. **Implementation** - Makes code changes following project conventions
 4. **Testing** - Generates unit tests for new/modified code
-5. **Validation** - Runs linters, tests, coverage checks
+5. **Validation** - Runs linters, TypeScript checks, production build (`npm run build`), tests, coverage checks
 6. **Commit** - Creates conventional commit with reports
+
+**Note:** Phase 5 includes production build verification to catch Next.js/Turbopack errors (e.g., MUI compatibility, dynamic imports) before deployment. Adds ~10-15s but prevents Vercel deploy failures.
 
 ### Report Structure
 
