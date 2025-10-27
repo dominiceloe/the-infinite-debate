@@ -36,12 +36,12 @@ function TextCard({ text }: { text: PrimaryText }) {
 
   return (
     <Card sx={{ display: "flex", flexDirection: "column", height: "100%", width: "100%", minWidth: 0 }}>
-      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", p: { xs: 1.5, sm: 2 } }}>
         <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, mb: 2 }}>
           <Box
             sx={{
-              width: 64,
-              height: 64,
+              width: { xs: 48, sm: 64 },
+              height: { xs: 48, sm: 64 },
               borderRadius: 1,
               overflow: "hidden",
               flexShrink: 0,
@@ -66,7 +66,7 @@ function TextCard({ text }: { text: PrimaryText }) {
               component="h2"
               gutterBottom
               sx={{
-                fontSize: "1.125rem",
+                fontSize: { xs: "1rem", sm: "1.125rem" },
                 lineHeight: 1.3,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -275,9 +275,10 @@ export default function TextsLibraryPage() {
           display: "grid",
           gridTemplateColumns: {
             xs: "1fr",
-            sm: "repeat(4, 1fr)"
+            sm: "repeat(2, 1fr)",
+            md: "repeat(4, 1fr)"
           },
-          gap: 3,
+          gap: { xs: 2, sm: 3 },
           mb: 3
         }}>
           <TextField
@@ -366,10 +367,12 @@ export default function TextsLibraryPage() {
                 <Box sx={{
                   display: "grid",
                   gridTemplateColumns: {
-                    xs: "repeat(2, 1fr)",
+                    xs: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)",
                     lg: "repeat(4, 1fr)"
                   },
-                  gap: 3
+                  gap: { xs: 2, sm: 2.5, md: 3 }
                 }}>
                   {texts.map((text: PrimaryText) => (
                     <TextCard key={text.id} text={text} />
