@@ -169,8 +169,8 @@ export default function DebateViewPage() {
       />
 
       {/* Main Content */}
-      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 12 } }}>
-        <Box sx={{ maxWidth: '1024px', mx: 'auto' }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 3, md: 12 }, px: { xs: 2, md: 3 } }}>
+        <Box sx={{ maxWidth: { xs: '100%', md: '1024px' }, mx: 'auto' }}>
           {/* Title and Status */}
           <Box sx={{ mb: 4 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 2, flexWrap: 'wrap' }}>
@@ -316,7 +316,7 @@ function StatusBadge({ status }: { status: string }) {
 function PendingState({ generateMutation }: { debate: Debate; generateMutation: UseMutationResult<DebateGenerationResponse, Error, void, unknown> }) {
   return (
     <Card>
-      <CardContent sx={{ p: { xs: 4, md: 6 }, textAlign: 'center' }}>
+      <CardContent sx={{ p: { xs: 2, md: 6 }, textAlign: 'center' }}>
         <Box sx={{ maxWidth: 'md', mx: 'auto' }}>
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
             Ready to Generate
@@ -364,7 +364,7 @@ function GeneratingState({ debate }: { debate: Debate; viewMode: 'transcript' | 
 
   return (
     <Card>
-      <CardContent sx={{ p: { xs: 4, md: 6 } }}>
+      <CardContent sx={{ p: { xs: 2, md: 6 } }}>
         {/* Show transcript immediately without disabled overlay */}
         {debate.transcript && (
           <Box sx={{ mb: 3 }}>
@@ -485,9 +485,15 @@ function CompletedState({ debate }: { debate: Debate; viewMode: 'transcript' | '
 
   return (
     <Card>
-      <CardContent sx={{ p: { xs: 4, md: 6 } }}>
+      <CardContent sx={{ p: { xs: 2, md: 6 } }}>
         <Box sx={{ mb: 3, pb: 3, borderBottom: 1, borderColor: 'divider' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: { xs: 'stretch', md: 'center' },
+            justifyContent: 'space-between',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2
+          }}>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
                 Debate Complete
@@ -503,6 +509,7 @@ function CompletedState({ debate }: { debate: Debate; viewMode: 'transcript' | '
               sx={{
                 fontWeight: 500,
                 px: 3,
+                width: { xs: '100%', sm: 'auto' },
               }}
             >
               {exportLoading ? 'Exporting...' : 'Export PDF'}
@@ -513,76 +520,93 @@ function CompletedState({ debate }: { debate: Debate; viewMode: 'transcript' | '
         {/* AI-Generated Summary */}
         {debate.summary && (
           <Box sx={{ mb: 4 }}>
-            <Box
+            <Accordion
               sx={{
                 bgcolor: 'primary.light',
                 borderRadius: 2,
-                p: 3,
                 mb: 3,
                 border: 2,
                 borderColor: 'primary.main',
+                '&:before': {
+                  display: 'none', // Remove default MUI accordion divider
+                },
               }}
             >
-              <Typography
-                variant="h5"
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'primary.dark' }} />}
                 sx={{
-                  fontWeight: 700,
-                  mb: 2,
-                  color: 'primary.dark',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
+                  px: { xs: 2, md: 3 },
+                  py: 1.5,
                 }}
               >
-                📋 Debate Summary
-              </Typography>
-              <ReactMarkdown
-                components={{
-                  p: ({ children }) => (
-                    <Typography
-                      sx={{
-                        color: 'text.primary',
-                        mb: 2,
-                        lineHeight: 1.7,
-                      }}
-                    >
-                      {children}
-                    </Typography>
-                  ),
-                  strong: ({ children }) => (
-                    <Typography
-                      component="span"
-                      sx={{
-                        fontWeight: 700,
-                        color: 'primary.dark',
-                      }}
-                    >
-                      {children}
-                    </Typography>
-                  ),
-                  ul: ({ children }) => (
-                    <Box
-                      component="ul"
-                      sx={{
-                        pl: 3,
-                        mb: 2,
-                        color: 'text.primary',
-                        listStyleType: 'disc',
-                      }}
-                    >
-                      {children}
-                    </Box>
-                  ),
-                  li: ({ children }) => (
-                    <Typography component="li" sx={{ mb: 0.5 }}>
-                      {children}
-                    </Typography>
-                  ),
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 700,
+                    color: 'primary.dark',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  📋 Debate Summary
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  px: { xs: 2, md: 3 },
+                  pb: { xs: 2, md: 3 },
+                  pt: 0,
                 }}
               >
-                {debate.summary}
-              </ReactMarkdown>
-            </Box>
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => (
+                      <Typography
+                        sx={{
+                          color: 'text.primary',
+                          mb: 2,
+                          lineHeight: 1.7,
+                        }}
+                      >
+                        {children}
+                      </Typography>
+                    ),
+                    strong: ({ children }) => (
+                      <Typography
+                        component="span"
+                        sx={{
+                          fontWeight: 700,
+                          color: 'primary.dark',
+                        }}
+                      >
+                        {children}
+                      </Typography>
+                    ),
+                    ul: ({ children }) => (
+                      <Box
+                        component="ul"
+                        sx={{
+                          pl: 3,
+                          mb: 2,
+                          color: 'text.primary',
+                          listStyleType: 'disc',
+                        }}
+                      >
+                        {children}
+                      </Box>
+                    ),
+                    li: ({ children }) => (
+                      <Typography component="li" sx={{ mb: 0.5 }}>
+                        {children}
+                      </Typography>
+                    ),
+                  }}
+                >
+                  {debate.summary}
+                </ReactMarkdown>
+              </AccordionDetails>
+            </Accordion>
           </Box>
         )}
 

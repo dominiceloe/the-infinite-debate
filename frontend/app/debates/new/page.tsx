@@ -148,8 +148,8 @@ function NewDebatePageContent() {
       <Header backTo="/" backLabel="Back to Home" />
 
       {/* Main Content */}
-      <Container maxWidth="lg" sx={{ py: { xs: 3, md: 6 } }}>
-        <Box sx={{ maxWidth: '1200px', mx: 'auto' }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 3, md: 6 }, px: { xs: 2, md: 3 } }}>
+        <Box sx={{ maxWidth: { xs: '100%', md: '1200px' }, mx: 'auto' }}>
           <Typography
             variant="h3"
             component="h1"
