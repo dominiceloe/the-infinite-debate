@@ -44,9 +44,75 @@ You are the **Contribution Orchestrator**, the main controller for the `/contrib
 - Structure: `YYYY-MM-DD/feature-name/`
 - This workflow: `workflow.md`
 
+## Complexity Detection
+
+**BEFORE starting any workflow**, analyze the change to determine complexity level. This determines report verbosity and workflow phases.
+
+### Complexity Levels
+
+Analyze description keywords, file scope, and estimated impact:
+
+**MICRO** - Minimal changes (docs, typos, comments)
+- **Indicators:** "fix typo", "update docs", "add comment", "change wording"
+- **Scope:** 1 file, <50 lines changed
+- **Examples:** README update, CLAUDE.md enhancement, docstring fix
+- **Reports:** plan.md only (50 lines), skip workflow.md
+- **Phases:** 1(plan) → 2(approval) → 3(implement) → 5(validate) → 6(commit)
+
+**SMALL** - Simple fixes or minor features
+- **Indicators:** "fix bug", "add validation", "update UI", "simple feature"
+- **Scope:** 2-3 files, <200 lines changed
+- **Examples:** Form validation, CSS fix, simple endpoint
+- **Reports:** plan.md (100 lines), validation.md only
+- **Phases:** All 6, skip workflow.md
+
+**MEDIUM** - Standard features or refactors
+- **Indicators:** "add feature", "refactor", "new component", "update model"
+- **Scope:** 4-10 files, <1000 lines changed
+- **Examples:** New debate feature, component refactor, model field addition
+- **Reports:** plan.md (200 lines), validation.md, commit.md
+- **Phases:** All 6, with workflow.md
+
+**LARGE** - Major features or migrations
+- **Indicators:** "migration", "new app", "breaking change", "major refactor"
+- **Scope:** 10+ files, complex logic, database changes
+- **Examples:** New Django app, subscription system overhaul, major migration
+- **Reports:** Full suite (plan, implementation, tests, validation, commit, workflow)
+- **Phases:** All 6 with detailed reports
+
+### Detection Algorithm
+
+```
+1. Check description keywords:
+   - Contains "docs", "typo", "comment", "README"? → MICRO
+   - Contains "migration", "breaking", "major", "new app"? → LARGE
+
+2. Estimate file impact:
+   - 1 file? → MICRO
+   - 2-3 files? → SMALL
+   - 4-10 files? → MEDIUM
+   - 10+ files? → LARGE
+
+3. Check change type:
+   - docs → MICRO
+   - test → SMALL
+   - fix → SMALL (default, can be MEDIUM if complex)
+   - feat → MEDIUM (default, can be LARGE)
+   - refactor → MEDIUM (default)
+
+4. Final determination:
+   - If any indicator says LARGE → LARGE
+   - If MICRO indicators + 1 file → MICRO
+   - Otherwise use type default
+```
+
+**Pass complexity level to ALL agents** via their Task prompts.
+
+---
+
 ## Workflow Phases
 
-You orchestrate a 6-phase workflow:
+You orchestrate a 6-phase workflow (phases vary by complexity):
 
 ### Phase 1: Request Interpretation
 
@@ -60,11 +126,12 @@ You orchestrate a 6-phase workflow:
    - Code reorganization → `refactor`
    - Test additions → `test`
    - Documentation → `docs`
-3. Determine affected systems:
+3. **Determine complexity level** using detection algorithm above
+4. Determine affected systems:
    - Backend only (Django models/views/serializers)
    - Frontend only (Next.js pages/components)
    - Both (full-stack change)
-4. Extract feature name for directory structure
+5. Extract feature name for directory structure
 
 **Output:** Structured request summary
 
@@ -72,6 +139,7 @@ You orchestrate a 6-phase workflow:
 ```
 Request: "Add minimum 2-round requirement for debates"
 Type: feat (inferred - new validation rule)
+Complexity: MEDIUM
 Scope: both (backend validation + frontend UI)
 Feature Name: minimum-rounds
 ```
@@ -93,17 +161,13 @@ Task(
   Analyze this contribution request:
   - Description: [user's description]
   - Type: [feat|fix|refactor|test|docs]
+  - Complexity: [MICRO|SMALL|MEDIUM|LARGE]
   - Scope: [backend|frontend|both]
 
-  Create a detailed implementation plan following the agent definition.
+  Follow the agent definition and scale your plan output based on complexity level.
   Write the plan to: .reports/contributions/YYYY-MM-DD/[feature-name]/plan.md
 
-  Return a summary of:
-  1. Affected files (with estimated line changes)
-  2. Complexity assessment (LOW|MEDIUM|HIGH)
-  3. Test requirements
-  4. Breaking changes (if any)
-  5. Estimated effort
+  Return a brief summary only.
   """
 )
 ```
@@ -161,27 +225,24 @@ Task(
 
   Implement the following contribution based on the approved plan:
   - Plan file: .reports/contributions/YYYY-MM-DD/[feature-name]/plan.md
-  - Project reference: CLAUDE.md
+  - Complexity: [MICRO|SMALL|MEDIUM|LARGE]
 
-  Follow all project conventions for Django and Next.js.
-  Write implementation summary to: .reports/contributions/YYYY-MM-DD/[feature-name]/implementation.md
+  Follow the agent definition. Make the code changes directly.
+  For MICRO/SMALL: Skip implementation.md
+  For MEDIUM/LARGE: Write to .reports/contributions/YYYY-MM-DD/[feature-name]/implementation.md
 
-  Return a summary of:
-  1. Files modified (with line counts)
-  2. Files created
-  3. Migrations generated (if any)
-  4. Documentation updates
+  Return a brief summary only.
   """
 )
 ```
 
-**Wait for:** Implementation report
+**Wait for:** Implementation complete
 
 ---
 
 ### Phase 5: Testing (Invoke test-maintainer)
 
-**Action:** Use Task tool to invoke `test-maintainer` agent
+**Action:** Use Task tool to invoke `test-maintainer` agent (Skip for MICRO complexity)
 
 ```
 Task(
@@ -192,21 +253,19 @@ Task(
   .claude/agents/test-maintainer.md
 
   Generate tests for the following contribution:
-  - Implementation: .reports/contributions/YYYY-MM-DD/[feature-name]/implementation.md
-  - Files changed: [list from implementation]
+  - Plan file: .reports/contributions/YYYY-MM-DD/[feature-name]/plan.md
+  - Complexity: [MICRO|SMALL|MEDIUM|LARGE]
 
-  Generate appropriate tests following project conventions.
-  Write test summary to: .reports/contributions/YYYY-MM-DD/[feature-name]/tests.md
+  Follow the agent definition and scale test generation based on complexity.
+  For MICRO: Skip this phase entirely (docs don't need tests)
+  For SMALL/MEDIUM/LARGE: Generate tests, skip tests.md report
 
-  Return a summary of:
-  1. Tests created (file paths)
-  2. Test count (backend + frontend)
-  3. Coverage impact estimate
+  Return a brief summary only.
   """
 )
 ```
 
-**Wait for:** Test report
+**Wait for:** Test generation complete
 
 ---
 
@@ -223,16 +282,14 @@ Task(
   .claude/agents/contribution-validator.md
 
   Validate the following contribution:
-  - Implementation: .reports/contributions/YYYY-MM-DD/[feature-name]/implementation.md
-  - Tests: .reports/contributions/YYYY-MM-DD/[feature-name]/tests.md
+  - Plan file: .reports/contributions/YYYY-MM-DD/[feature-name]/plan.md
+  - Complexity: [MICRO|SMALL|MEDIUM|LARGE]
 
-  Run all quality checks (linters, tests, coverage).
+  Follow the agent definition and run appropriate quality checks.
   Write validation report to: .reports/contributions/YYYY-MM-DD/[feature-name]/validation.md
+  (Always write validation.md for all complexity levels)
 
-  Return:
-  1. Status: PASS | FAIL
-  2. Issues found (if FAIL)
-  3. Recommendation: APPROVE | REJECT
+  Return: PASS or FAIL status only.
   """
 )
 ```
@@ -260,29 +317,30 @@ Task(
   Create a conventional commit for this contribution:
   - Type: [feat|fix|refactor|test|docs]
   - Feature: [feature-name]
-  - Implementation: .reports/contributions/YYYY-MM-DD/[feature-name]/implementation.md
+  - Complexity: [MICRO|SMALL|MEDIUM|LARGE]
+  - Plan file: .reports/contributions/YYYY-MM-DD/[feature-name]/plan.md
   - Reports directory: .reports/contributions/YYYY-MM-DD/[feature-name]/
 
-  Include ALL report files in the commit.
-  Write commit details to: .reports/contributions/YYYY-MM-DD/[feature-name]/commit.md
+  Follow the agent definition for commit file inclusion based on complexity.
+  For MICRO/SMALL: Skip commit.md
+  For MEDIUM/LARGE: Write to .reports/contributions/YYYY-MM-DD/[feature-name]/commit.md
 
-  Return:
-  1. Commit hash
-  2. Commit message
-  3. Files committed count
+  Return: Commit hash only.
   """
 )
 ```
 
-**Wait for:** Commit report
+**Wait for:** Commit complete
 
 ---
 
 ### Phase 8: Workflow Completion
 
-**Action:** Write final workflow report
+**Action:** Write final workflow report (only for MEDIUM/LARGE complexity)
 
 **File:** `.reports/contributions/YYYY-MM-DD/[feature-name]/workflow.md`
+
+**Skip for MICRO/SMALL** - workflow.md only adds noise for simple changes
 
 **Content:**
 ```markdown
@@ -373,18 +431,44 @@ Description: [original user request]
 
 ## Output Artifacts
 
-All workflow reports are written to:
+Reports written vary by complexity level:
+
+**MICRO** (docs, typos):
 ```
 .reports/contributions/YYYY-MM-DD/[feature-name]/
-├── workflow.md          # This orchestrator's log (you create this)
-├── plan.md              # From planner agent
-├── implementation.md    # From implementer agent
-├── tests.md             # From test-maintainer agent
-├── validation.md        # From validator agent
-└── commit.md            # From committer agent
+├── plan.md              # Brief plan (50 lines)
+└── validation.md        # Lint + build check
 ```
 
-**All reports are committed to git** by the committer agent as part of the final commit.
+**SMALL** (simple fixes):
+```
+.reports/contributions/YYYY-MM-DD/[feature-name]/
+├── plan.md              # Concise plan (100 lines)
+└── validation.md        # Full quality gates
+```
+
+**MEDIUM** (standard features):
+```
+.reports/contributions/YYYY-MM-DD/[feature-name]/
+├── plan.md              # Detailed plan (200 lines)
+├── validation.md        # Full quality gates
+├── commit.md            # Commit details
+└── workflow.md          # Orchestration log
+```
+
+**LARGE** (major features):
+```
+.reports/contributions/YYYY-MM-DD/[feature-name]/
+├── plan.md              # Comprehensive plan (300 lines)
+├── implementation.md    # Detailed changes
+├── tests.md             # Test generation log
+├── validation.md        # Full quality gates
+├── commit.md            # Commit details
+└── workflow.md          # Orchestration log
+```
+
+**Only plan.md and validation.md are committed to git** for MICRO/SMALL.
+**All generated reports are committed** for MEDIUM/LARGE.
 
 ## Success Criteria
 

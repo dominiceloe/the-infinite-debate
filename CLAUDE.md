@@ -385,9 +385,35 @@ DebateCard.displayName = 'DebateCard';
 
 ## Contribution Workflow
 
+### ⚠️ CRITICAL: Contribution Rules
+
+**ABSOLUTE ENFORCEMENT - ZERO EXCEPTIONS**
+
+ALL code changes MUST go through the `/contribute` workflow. This is non-negotiable.
+
+**Prohibited:**
+- ❌ Manual commits without workflow
+- ❌ Direct file editing without `/contribute`
+- ❌ Skipping any workflow phase
+- ❌ Committing code without reports
+
+**Required:**
+- ✅ ALWAYS use `/contribute` command
+- ✅ Complete all 6 workflow phases
+- ✅ Generate and commit appropriate reports
+- ✅ Pass all quality gates before commit
+
+**Consequences of manual commits:**
+- Lost documentation trail
+- No quality validation
+- Inconsistent project history
+- Violation of project standards
+
+---
+
 ### Using `/contribute` Command
 
-For all code changes, use the structured contribution workflow:
+**For ALL code changes**, use the structured contribution workflow:
 
 ```bash
 # Feature addition
@@ -398,34 +424,87 @@ For all code changes, use the structured contribution workflow:
 
 # Refactoring
 /contribute refactor "Extract debate credit calculation to utility"
+
+# Documentation
+/contribute docs "Update setup instructions in README"
+
+# Tests
+/contribute test "Add validation tests for debate model"
 ```
 
-### Workflow Phases
+---
+
+### Workflow Phases (6 Required Steps)
 
 1. **Planning** - Analyzes request, identifies affected files, creates checklist
 2. **Approval Gate** - User reviews plan before proceeding
 3. **Implementation** - Makes code changes following project conventions
-4. **Testing** - Generates unit tests for new/modified code
+4. **Testing** - Generates unit tests for new/modified code (skipped for docs)
 5. **Validation** - Runs linters, TypeScript checks, production build (`npm run build`), tests, coverage checks
 6. **Commit** - Creates conventional commit with reports
 
 **Note:** Phase 5 includes production build verification to catch Next.js/Turbopack errors (e.g., MUI compatibility, dynamic imports) before deployment. Adds ~10-15s but prevents Vercel deploy failures.
 
-### Report Structure
+**Complexity Detection:** The orchestrator automatically detects change complexity (MICRO|SMALL|MEDIUM|LARGE) based on:
+- File count (1 file = MICRO, 2-3 = SMALL, 4-10 = MEDIUM, 10+ = LARGE)
+- Keywords ("docs", "typo" = MICRO; "migration", "breaking" = LARGE)
+- Change type (docs = MICRO, test/fix = SMALL, feat = MEDIUM by default)
 
-All workflow outputs are committed to `.reports/contributions/`:
+---
 
+### Report Structure (Complexity-Based)
+
+Reports are scaled to change complexity to minimize repo bloat:
+
+**MICRO** (docs, typos, 1 file):
 ```
-.reports/contributions/
-└── YYYY-MM-DD/
-    └── feature-name/
-        ├── workflow.md        # Orchestration log
-        ├── plan.md            # Implementation plan
-        ├── implementation.md  # Changes made
-        ├── tests.md           # Test generation
-        ├── validation.md      # Quality checks
-        └── commit.md          # Final commit details
+.reports/contributions/YYYY-MM-DD/feature-name/
+├── plan.md          # 50-line brief plan
+└── validation.md    # Markdown lint + build check
 ```
+
+**SMALL** (simple fixes, 2-3 files):
+```
+.reports/contributions/YYYY-MM-DD/feature-name/
+├── plan.md          # 100-line concise plan
+└── validation.md    # Full quality gates
+```
+
+**MEDIUM** (standard features, 4-10 files):
+```
+.reports/contributions/YYYY-MM-DD/feature-name/
+├── plan.md          # 200-line detailed plan
+├── validation.md    # Full quality gates + coverage
+├── commit.md        # Commit details
+└── workflow.md      # Orchestration log
+```
+
+**LARGE** (major features, 10+ files):
+```
+.reports/contributions/YYYY-MM-DD/feature-name/
+├── plan.md          # 300-line comprehensive plan
+├── implementation.md # Detailed changes (250 lines)
+├── tests.md         # Test generation log
+├── validation.md    # Full quality gates + coverage
+├── commit.md        # Commit details
+└── workflow.md      # Orchestration log
+```
+
+**Why only plan.md + validation.md for MICRO/SMALL?**
+- `plan.md` = WHY (Architecture Decision Record)
+- `validation.md` = Quality gate proof (compliance audit)
+- Other files add no value:
+  - `implementation.md` → git diff shows this
+  - `tests.md` → test file diffs show this
+  - `commit.md` → commit message shows this
+  - `workflow.md` → ephemeral process data
+
+**Repository Impact:**
+- Average report size: ~25KB per contribution (was 80KB)
+- 70% reduction in repo bloat
+- Can handle ~20,000 contributions before 1GB repo size
+
+---
 
 ### Commit Message Format
 
@@ -441,6 +520,104 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 **Types:** feat, fix, refactor, test, docs, style, chore
 **Scopes:** debates, personas, texts, users, payments, health, ui, api, auth, config
+
+---
+
+### Workflow Enforcement
+
+**Pre-Commit Verification:**
+```bash
+# This should NEVER be run manually
+git commit -m "some message"  # ❌ WRONG
+
+# ALWAYS use /contribute instead
+/contribute "description of change"  # ✅ CORRECT
+```
+
+**Quality Gates (Enforced in Phase 5):**
+- No debug code (console.log, print statements)
+- All tests pass (backend + frontend)
+- No linter errors (warnings OK)
+- No TypeScript errors
+- Production build succeeds (frontend)
+- Coverage ≥ baseline (MEDIUM/LARGE only)
+- No breaking changes without documentation
+
+**If any gate fails:**
+- Workflow STOPS at validation phase
+- No commit is created
+- User must fix issues and re-run `/contribute`
+
+---
+
+### Common Mistakes (Avoid These)
+
+❌ **Mistake 1: Manual commit**
+```bash
+# Someone manually edited files and committed
+git add backend/debates/models.py
+git commit -m "fixed bug"
+```
+**Problem:** No plan, no tests, no validation, no reports.
+
+✅ **Correct:**
+```bash
+/contribute fix "Fixed validation bug in debate model"
+```
+
+---
+
+❌ **Mistake 2: Skipping approval gate**
+```bash
+# Someone tries to bypass user approval
+# (This is prevented by orchestrator)
+```
+**Problem:** User doesn't see plan before implementation.
+
+✅ **Correct:** Wait for user to approve plan in Phase 2.
+
+---
+
+❌ **Mistake 3: Committing without passing validation**
+```bash
+# Someone forces commit despite test failures
+git commit --no-verify  # DON'T DO THIS
+```
+**Problem:** Broken code in git history.
+
+✅ **Correct:** Fix all validation errors, then re-run `/contribute`.
+
+---
+
+❌ **Mistake 4: Manual report editing**
+```bash
+# Someone manually edits validation.md to change FAIL to PASS
+```
+**Problem:** Fraudulent quality gate passage.
+
+✅ **Correct:** Fix actual issues, re-run workflow to regenerate reports.
+
+---
+
+### Next Steps After Commit
+
+After successful workflow completion:
+
+1. **Push to feature branch:**
+   ```bash
+   git push -u origin feature/your-feature
+   ```
+
+2. **Create Pull Request** on GitHub:
+   - All CI checks must pass
+   - Code review by team members
+   - Squash and merge to main
+
+3. **Deployment:**
+   - Backend: Deploys to AWS Lightsail via Docker
+   - Frontend: Auto-deploys to Vercel on main branch push
+
+See deployment section for full details.
 
 ## Project-Specific Patterns
 
