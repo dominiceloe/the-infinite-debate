@@ -374,7 +374,13 @@ export default function Home() {
                           aria-pressed={isSelected}
                           aria-label={`Filter by ${categoryInfo.title} category`}
                           sx={{
-                            fontSize: { xs: '0.75rem', md: '0.875rem' },
+                            width: { xs: '100%', sm: 'auto' },
+                            fontSize: { xs: '0.8125rem', md: '0.875rem' },
+                            height: { xs: '36px', md: '32px' },
+                            '& .MuiChip-label': {
+                              px: { xs: 2, md: 1.5 },
+                              py: { xs: 1.25, md: 0.5 },
+                            },
                             '&:hover': {
                               bgcolor: isSelected ? 'primary.dark' : 'action.hover',
                             },
@@ -435,7 +441,13 @@ export default function Home() {
                           aria-pressed={isSelected}
                           aria-label={`Filter by ${eraInfo.label} era, ${eraInfo.range}`}
                           sx={{
-                            fontSize: { xs: '0.75rem', md: '0.875rem' },
+                            width: { xs: '100%', sm: 'auto' },
+                            fontSize: { xs: '0.8125rem', md: '0.875rem' },
+                            height: { xs: '36px', md: '32px' },
+                            '& .MuiChip-label': {
+                              px: { xs: 2, md: 1.5 },
+                              py: { xs: 1.25, md: 0.5 },
+                            },
                             '&:hover': {
                               bgcolor: isSelected ? 'secondary.dark' : 'action.hover',
                             },
@@ -590,23 +602,23 @@ function PersonaCategory({ title, description, personas, gradient }: PersonaCate
         </Typography>
       </Box>
 
-      <Grid container spacing={{ xs: 1.5, md: 2 }}>
+      <Grid container spacing={{ xs: 1, sm: 1.5, md: 2 }}>
         {sortedPersonas.map((persona) => {
           const hasAccess = hasPersonaAccess(user?.subscription_tier, persona.required_tier);
           const badge = getTierBadge(persona.required_tier, user?.subscription_tier);
           const isLocked = !hasAccess;
 
           return (
-            <Grid key={persona.id} size={{ xs: 12, sm: 6, lg: 4, xl: 3 }}>
+            <Grid key={persona.id} size={{ xs: 6, sm: 6, md: 4, lg: 3 }}>
               <Card sx={{ opacity: isLocked ? 0.6 : 1 }}>
                 <CardActionArea component={Link} href={`/personas/${persona.slug}`}>
-                  <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2 }}>
+                  <CardContent sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, p: { xs: 1.5, sm: 2 } }}>
                     <Box
                       sx={{
                         position: 'relative',
-                        width: 56,
-                        height: 56,
-                        minWidth: 56,
+                        width: { xs: 48, sm: 56 },
+                        height: { xs: 48, sm: 56 },
+                        minWidth: { xs: 48, sm: 56 },
                         borderRadius: '50%',
                         bgcolor: 'grey.100',
                         overflow: 'hidden',
@@ -628,7 +640,7 @@ function PersonaCategory({ title, description, personas, gradient }: PersonaCate
                           sx={{
                             fontWeight: 600,
                             color: 'text.primary',
-                            fontSize: { xs: '1rem', md: '1.125rem' },
+                            fontSize: { xs: '0.875rem', sm: '1rem', md: '1.125rem' },
                             transition: 'color 0.2s',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -659,6 +671,7 @@ function PersonaCategory({ title, description, personas, gradient }: PersonaCate
                         variant="body2"
                         color="text.secondary"
                         sx={{
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' },
                           mt: 0.25,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
