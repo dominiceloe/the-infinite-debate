@@ -57,8 +57,8 @@ const PersonaGrid = React.memo<PersonaGridProps>(({
             xs: '1fr',
             md: `repeat(${gridColumns}, 1fr)`,
           },
-          gap: 3,
-          minHeight: '350px',
+          gap: { xs: 1, md: 2 },
+          minHeight: { xs: '60px', md: '80px' },
         }}
       >
         {/* Render a card for each persona */}

@@ -60,7 +60,7 @@ export default function DebateTheaterView({ debate }: DebateTheaterViewProps) {
       sx={{
         minHeight: '70vh',
         background: 'linear-gradient(to bottom, #0f172a, #1e293b)',
-        borderRadius: 3,
+        borderRadius: { xs: 0, md: 2 },
         overflow: 'hidden',
         position: 'relative',
       }}
