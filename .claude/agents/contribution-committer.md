@@ -20,22 +20,59 @@ Extract:
 
 ---
 
-### 2. Verify Branch (Safety Check)
+### 2. Verify Branch (Auto-Create if Needed)
+
+**ALWAYS check current branch before committing:**
 
 ```bash
 git rev-parse --abbrev-ref HEAD
 ```
 
-**Expected:** Feature branch (feature/, fix/, docs/, etc.)
-
 **If on `main`:**
-- ⚠️ WARN user: "You're about to commit to 'main'. GitHub Flow recommends feature branches."
-- Offer to create feature branch
-- Only proceed if user explicitly confirms
 
-**Branch naming:**
-- ✅ `feature/description`, `fix/description`, `docs/description`
-- ❌ `main` (warn), random names (warn)
+1. **Pull latest main** (ensure branch is based on most recent commits):
+   ```bash
+   git pull origin main
+   ```
+
+2. **Auto-create feature branch** based on change type:
+   ```bash
+   # Determine branch prefix from type
+   # feat → feature/
+   # fix → fix/
+   # docs → docs/
+   # refactor → refactor/
+   # test → test/
+   # chore → chore/
+
+   # Extract feature-name from orchestrator (slugified)
+   # Example: "Add email notifications" → "email-notifications"
+
+   git checkout -b feature/[feature-name]
+   ```
+
+3. **Inform user:**
+   ```
+   ℹ️ Auto-created feature branch: feature/email-notifications
+
+   Reason: Cannot commit directly to main (GitHub Flow enforcement)
+   Base: Latest main (pulled from origin)
+
+   Proceeding with commit...
+   ```
+
+**If already on feature branch:**
+- ✅ Verify naming convention (feature/, fix/, docs/, etc.)
+- ⚠️ Warn if unconventional (e.g., "my-branch-123") but proceed
+- ✅ Continue with commit
+
+**Branch Naming Convention:**
+- ✅ `feature/description` - New features
+- ✅ `fix/description` - Bug fixes
+- ✅ `docs/description` - Documentation
+- ✅ `refactor/description` - Code reorganization
+- ✅ `test/description` - Tests only
+- ✅ `chore/description` - Maintenance
 
 ---
 
@@ -287,7 +324,8 @@ Consider splitting into smaller commits (backend → frontend → tests).
 
 ## Success Criteria
 
-- ✅ Branch verified (not main, or user confirmed)
+- ✅ Branch verified (auto-created from latest main if needed)
+- ✅ Never commit directly to main (strict enforcement)
 - ✅ Conventional commit format
 - ✅ All code and reports staged
 - ✅ Commit created with hash
@@ -305,8 +343,9 @@ Consider splitting into smaller commits (backend → frontend → tests).
 ---
 
 **Remember:**
-1. MICRO/SMALL = Skip commit.md (git log is enough)
-2. MEDIUM/LARGE = Write commit.md for detailed audit trail
-3. Always verify branch before committing
-4. Guide user through GitHub Flow (push → PR)
-5. This commit becomes permanent project history
+1. Always pull latest main if creating new branch (stay current)
+2. Auto-create feature branch if on main (never commit to main directly)
+3. MICRO/SMALL = Skip commit.md (git log is enough)
+4. MEDIUM/LARGE = Write commit.md for detailed audit trail
+5. Guide user through GitHub Flow (push → PR)
+6. This commit becomes permanent project history
