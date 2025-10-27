@@ -17,6 +17,11 @@ import {
   Divider,
   Breadcrumbs,
   Link as MuiLink,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
@@ -24,6 +29,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import StarIcon from '@mui/icons-material/Star';
 import ForumIcon from '@mui/icons-material/Forum';
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 interface HeaderProps {
   backTo?: string;
@@ -34,6 +45,7 @@ interface HeaderProps {
 export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps = {}) {
   const { user, isAuthenticated, logout } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -43,8 +55,17 @@ export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps =
     setAnchorEl(null);
   };
 
+  const handleMobileMenuOpen = () => {
+    setMobileMenuOpen(true);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMenuOpen(false);
+  };
+
   const handleLogout = async () => {
     handleMenuClose();
+    handleMobileMenuClose();
     await logout();
   };
 
@@ -73,171 +94,338 @@ export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps =
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              {backTo && backLabel && (
+              {/* Desktop Navigation (md+) */}
+              <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center' }}>
+                {backTo && backLabel && (
+                  <Button
+                    component={Link}
+                    href={backTo}
+                    variant="text"
+                    sx={{
+                      color: 'text.secondary',
+                      '&:hover': { color: 'text.primary' },
+                      px: 2,
+                      fontSize: '1rem',
+                    }}
+                  >
+                    ← {backLabel}
+                  </Button>
+                )}
                 <Button
                   component={Link}
-                  href={backTo}
+                  href="/texts"
                   variant="text"
                   sx={{
                     color: 'text.secondary',
                     '&:hover': { color: 'text.primary' },
-                    px: { xs: 1.5, sm: 2 },
-                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    px: 2,
+                    fontSize: '1rem',
                   }}
                 >
-                  ← {backLabel}
+                  Library
                 </Button>
-              )}
-              <Button
-                component={Link}
-                href="/texts"
-                variant="text"
-                sx={{
-                  color: 'text.secondary',
-                  '&:hover': { color: 'text.primary' },
-                  px: { xs: 1.5, sm: 2 },
-                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                }}
-              >
-                Library
-              </Button>
-              <Button
-                component={Link}
-                href="/pricing"
-                variant="text"
-                sx={{
-                  color: 'text.secondary',
-                  '&:hover': { color: 'text.primary' },
-                  px: { xs: 1.5, sm: 2 },
-                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                }}
-              >
-                Pricing
-              </Button>
-            {isAuthenticated ? (
-              <>
                 <Button
                   component={Link}
-                  href="/debates/new"
-                  variant="contained"
-                  sx={{ px: { xs: 2, sm: 3 }, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}
-                >
-                  Create Debate
-                </Button>
-                <IconButton
-                  onClick={handleMenuOpen}
+                  href="/pricing"
+                  variant="text"
                   sx={{
-                    ml: 1,
-                    border: '2px solid',
-                    borderColor: 'primary.main',
+                    color: 'text.secondary',
+                    '&:hover': { color: 'text.primary' },
+                    px: 2,
+                    fontSize: '1rem',
                   }}
                 >
-                  <Badge
-                    badgeContent={user?.credits_remaining}
-                    color="secondary"
-                    max={999}
-                    sx={{
-                      '& .MuiBadge-badge': {
-                        fontSize: '0.65rem',
-                        height: '18px',
-                        minWidth: '18px',
-                      },
-                    }}
-                  >
-                    <AccountCircleIcon />
-                  </Badge>
+                  Pricing
+                </Button>
+                {isAuthenticated ? (
+                  <>
+                    <Button
+                      component={Link}
+                      href="/debates/new"
+                      variant="contained"
+                      sx={{ px: 3, py: 1.5, fontSize: '1rem' }}
+                    >
+                      Create Debate
+                    </Button>
+                    <IconButton
+                      onClick={handleMenuOpen}
+                      sx={{
+                        ml: 1,
+                        border: '2px solid',
+                        borderColor: 'primary.main',
+                      }}
+                    >
+                      <Badge
+                        badgeContent={user?.credits_remaining}
+                        color="secondary"
+                        max={999}
+                        sx={{
+                          '& .MuiBadge-badge': {
+                            fontSize: '0.65rem',
+                            height: '18px',
+                            minWidth: '18px',
+                          },
+                        }}
+                      >
+                        <AccountCircleIcon />
+                      </Badge>
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={handleMenuClose}
+                      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                      sx={{ mt: 1 }}
+                    >
+                      <Box sx={{ px: 2, py: 1.5, minWidth: 200 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                          {user?.username}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {user?.email}
+                        </Typography>
+                        <Divider sx={{ my: 1 }} />
+                        <Typography variant="body2" sx={{ mb: 0.5 }}>
+                          <strong>Credits:</strong> {user?.credits_remaining}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {user?.subscription_tier === 'trial'
+                            ? `Trial: ${user?.days_until_trial_end} days left`
+                            : `${user?.subscription_tier} plan`
+                          }
+                        </Typography>
+                      </Box>
+                      <Divider />
+                      <MenuItem
+                        component={Link}
+                        href="/debates"
+                        onClick={handleMenuClose}
+                      >
+                        <ForumIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+                        My Debates
+                      </MenuItem>
+                      <MenuItem
+                        component={Link}
+                        href="/account"
+                        onClick={handleMenuClose}
+                      >
+                        <ManageAccountsIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+                        Manage Account
+                      </MenuItem>
+                      <MenuItem
+                        component={Link}
+                        href="/my-requests"
+                        onClick={handleMenuClose}
+                      >
+                        <AssignmentIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+                        My Requests
+                      </MenuItem>
+                      <MenuItem
+                        component={Link}
+                        href="/request-persona"
+                        onClick={handleMenuClose}
+                      >
+                        <StarIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+                        Request Persona
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem onClick={handleLogout}>
+                        <LogoutIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+                        Logout
+                      </MenuItem>
+                    </Menu>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      component={Link}
+                      href="/login"
+                      variant="outlined"
+                      color="inherit"
+                      sx={{ px: 3, py: 1.5, fontSize: '1rem' }}
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      component={Link}
+                      href="/register"
+                      variant="contained"
+                      sx={{ px: 3, py: 1.5, fontSize: '1rem' }}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+              </Box>
+
+              {/* Mobile Hamburger Menu (xs-sm) */}
+              <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <IconButton
+                  onClick={handleMobileMenuOpen}
+                  aria-label="Open mobile menu"
+                  sx={{ color: 'text.primary' }}
+                >
+                  <MenuIcon />
                 </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                  sx={{ mt: 1 }}
-                >
-                  <Box sx={{ px: 2, py: 1.5, minWidth: 200 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                      {user?.username}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {user?.email}
-                    </Typography>
-                    <Divider sx={{ my: 1 }} />
-                    <Typography variant="body2" sx={{ mb: 0.5 }}>
-                      <strong>Credits:</strong> {user?.credits_remaining}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {user?.subscription_tier === 'trial'
-                        ? `Trial: ${user?.days_until_trial_end} days left`
-                        : `${user?.subscription_tier} plan`
-                      }
-                    </Typography>
-                  </Box>
-                  <Divider />
-                  <MenuItem
-                    component={Link}
-                    href="/debates"
-                    onClick={handleMenuClose}
-                  >
-                    <ForumIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    My Debates
-                  </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    href="/account"
-                    onClick={handleMenuClose}
-                  >
-                    <ManageAccountsIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    Manage Account
-                  </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    href="/my-requests"
-                    onClick={handleMenuClose}
-                  >
-                    <AssignmentIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    My Requests
-                  </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    href="/request-persona"
-                    onClick={handleMenuClose}
-                  >
-                    <StarIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    Request Persona
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleLogout}>
-                    <LogoutIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    Logout
-                  </MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <>
-                <Button
-                  component={Link}
-                  href="/login"
-                  variant="outlined"
-                  color="inherit"
-                  sx={{ px: { xs: 2, sm: 3 }, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}
-                >
-                  Login
-                </Button>
-                <Button
-                  component={Link}
-                  href="/register"
-                  variant="contained"
-                  sx={{ px: { xs: 2, sm: 3 }, py: { xs: 1, sm: 1.5 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}
-                >
-                  Sign Up
-                </Button>
-              </>
-            )}
-          </Box>
+              </Box>
+            </Box>
         </Container>
       </Toolbar>
     </AppBar>
+
+    {/* Mobile Drawer Menu */}
+    <Drawer
+      anchor="right"
+      open={mobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <Box sx={{ width: 280, pt: 2 }}>
+        <List>
+          {/* Navigation Links */}
+          <ListItem
+            component={Link}
+            href="/texts"
+            onClick={handleMobileMenuClose}
+            sx={{ cursor: 'pointer' }}
+          >
+            <ListItemIcon>
+              <MenuBookIcon />
+            </ListItemIcon>
+            <ListItemText primary="Library" />
+          </ListItem>
+          <ListItem
+            component={Link}
+            href="/pricing"
+            onClick={handleMobileMenuClose}
+            sx={{ cursor: 'pointer' }}
+          >
+            <ListItemIcon>
+              <LocalOfferIcon />
+            </ListItemIcon>
+            <ListItemText primary="Pricing" />
+          </ListItem>
+
+          <Divider sx={{ my: 2 }} />
+
+          {/* Auth-specific menu items */}
+          {isAuthenticated ? (
+            <>
+              <ListItem
+                component={Link}
+                href="/debates/new"
+                onClick={handleMobileMenuClose}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <AddCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Create Debate" />
+              </ListItem>
+              <ListItem
+                component={Link}
+                href="/debates"
+                onClick={handleMobileMenuClose}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <ForumIcon />
+                </ListItemIcon>
+                <ListItemText primary="My Debates" />
+              </ListItem>
+              <ListItem
+                component={Link}
+                href="/account"
+                onClick={handleMobileMenuClose}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <ManageAccountsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Manage Account" />
+              </ListItem>
+              <ListItem
+                component={Link}
+                href="/my-requests"
+                onClick={handleMobileMenuClose}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <AssignmentIcon />
+                </ListItemIcon>
+                <ListItemText primary="My Requests" />
+              </ListItem>
+              <ListItem
+                component={Link}
+                href="/request-persona"
+                onClick={handleMobileMenuClose}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <StarIcon />
+                </ListItemIcon>
+                <ListItemText primary="Request Persona" />
+              </ListItem>
+              <Divider sx={{ my: 2 }} />
+              <ListItem
+                onClick={handleLogout}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary="Logout" />
+              </ListItem>
+
+              {/* User info footer */}
+              <Box sx={{ px: 2, py: 2, mt: 2, bgcolor: 'grey.100', borderRadius: 1, mx: 2 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                  {user?.username}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  {user?.email}
+                </Typography>
+                <Divider sx={{ my: 1 }} />
+                <Typography variant="body2" sx={{ mb: 0.5 }}>
+                  <strong>Credits:</strong> {user?.credits_remaining}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {user?.subscription_tier === 'trial'
+                    ? `Trial: ${user?.days_until_trial_end} days left`
+                    : `${user?.subscription_tier} plan`
+                  }
+                </Typography>
+              </Box>
+            </>
+          ) : (
+            <>
+              <ListItem
+                component={Link}
+                href="/login"
+                onClick={handleMobileMenuClose}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <LoginIcon />
+                </ListItemIcon>
+                <ListItemText primary="Login" />
+              </ListItem>
+              <ListItem
+                component={Link}
+                href="/register"
+                onClick={handleMobileMenuClose}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemIcon>
+                  <PersonAddIcon />
+                </ListItemIcon>
+                <ListItemText primary="Sign Up" />
+              </ListItem>
+            </>
+          )}
+        </List>
+      </Box>
+    </Drawer>
 
     {/* Breadcrumbs */}
     {breadcrumbs && breadcrumbs.length > 0 && (
