@@ -140,31 +140,31 @@ Track which personas have portraits and which need images generated via ChatGPT.
 - [x] Toni Morrison (1931-2019) - `morrison.png`
 
 ### Comedians & Satirists (7)
-- [ ] Mark Twain (1835-1910) - `mark_twain.png`
-- [ ] Lenny Bruce (1925-1966) - `lenny_bruce.png`
-- [ ] George Carlin (1937-2008) - `george_carlin.png`
-- [ ] Bill Hicks (1961-1994) - `bill_hicks.png`
-- [ ] Jon Stewart (1962-present) - `jon_stewart.png`
-- [ ] Dave Chappelle (1973-present) - `dave_chappelle.png`
-- [ ] Hannah Gadsby (1978-present) - `hannah_gadsby.png`
+- [x] Mark Twain (1835-1910) - `mark-twain.png`
+- [x] Lenny Bruce (1925-1966) - `lenny-bruce.png`
+- [x] George Carlin (1937-2008) - `george-carlin.png`
+- [x] Bill Hicks (1961-1994) - `bill-hicks.png`
+- [x] Jon Stewart (1962-present) - `jon-stewart.png`
+- [x] Dave Chappelle (1973-present) - `dave-chappelle.png`
+- [x] Hannah Gadsby (1978-present) - `hannah-gadsby.png`
 
 ### Contemporary Public Intellectuals (7)
-- [ ] Noam Chomsky (1928-present) - `chomsky.png`
-- [ ] Camille Paglia (1947-present) - `paglia.png`
-- [ ] Slavoj Žižek (1949-present) - `zizek.png`
-- [ ] Nassim Nicholas Taleb (1960-present) - `taleb.png`
-- [ ] Jordan Peterson (1962-present) - `peterson.png`
-- [ ] Malcolm Gladwell (1963-present) - `gladwell.png`
-- [ ] Thomas Sowell (1930-present) - `sowell.png`
+- [x] Noam Chomsky (1928-present) - `noam-chomsky.png`
+- [x] Camille Paglia (1947-present) - `camille-paglia.png`
+- [x] Slavoj Žižek (1949-present) - `slavoj-zizek.png`
+- [x] Nassim Nicholas Taleb (1960-present) - `nassim-nicholas-taleb.png`
+- [x] Jordan Peterson (1962-present) - `jordan-peterson.png`
+- [x] Malcolm Gladwell (1963-present) - `malcolm-gladwell.png`
+- [x] Thomas Sowell (1930-present) - `thomas-sowell.png`
 
 ### Counterculture Icons (7)
-- [ ] Emma Goldman (1869-1940) - `goldman.png`
-- [ ] Timothy Leary (1920-1996) - `leary.png`
-- [ ] Howard Zinn (1922-2010) - `zinn.png`
-- [ ] Allen Ginsberg (1926-1997) - `ginsberg.png`
-- [ ] Abbie Hoffman (1936-1989) - `hoffman.png`
-- [ ] Hunter S. Thompson (1937-2005) - `thompson.png`
-- [ ] Angela Davis (1944-present) - `davis.png`
+- [x] Emma Goldman (1869-1940) - `emma-goldman.png`
+- [x] Timothy Leary (1920-1996) - `timothy-leary.png`
+- [x] Howard Zinn (1922-2010) - `howard-zinn.png`
+- [x] Allen Ginsberg (1926-1997) - `allen-ginsberg.png`
+- [x] Abbie Hoffman (1936-1989) - `abbie-hoffman.png`
+- [x] Hunter S. Thompson (1937-2005) - `hunter-s-thompson.png`
+- [x] Angela Davis (1944-present) - `angela-davis.png`
 
 ### Media Critics (7)
 - [ ] Walter Lippmann (1889-1974) - `lippmann.png`
@@ -185,7 +185,7 @@ Track which personas have portraits and which need images generated via ChatGPT.
 - [x] Thomas Sankara (1949-1987) - `thomas_sankara.png`
 
 ### Latin American Voices (7)
-- [x] José Martí (1853-1895) - `jose_marti.png`
+- [ ] José Martí (1853-1895) - `jose_marti.png`
 - [x] Octavio Paz (1914-1998) - `octavio_paz.png`
 - [x] Paulo Freire (1921-1997) - `paulo_freire.png`
 - [x] Eduardo Galeano (1940-2015) - `eduardo_galeano.png`
@@ -212,13 +212,13 @@ Track which personas have portraits and which need images generated via ChatGPT.
 - [x] Glenn Greenwald (1967-present) - `glenn_greenwald.png`
 
 ### Anthropologists & Cultural Observers (7)
-- [ ] Franz Boas (1858-1942) - `franz_boas.png`
-- [ ] Margaret Mead (1901-1978) - `margaret_mead.png`
-- [ ] Claude Lévi-Strauss (1908-2009) - `claude_levi_strauss.png`
-- [ ] Zora Neale Hurston (1891-1960) - `zora_neale_hurston.png`
-- [ ] Clifford Geertz (1926-2006) - `clifford_geertz.png`
-- [ ] Mary Douglas (1921-2007) - `mary_douglas.png`
-- [ ] David Graeber (1961-2020) - `david_graeber.png`
+- [x] Franz Boas (1858-1942) - `franz-boas.png`
+- [x] Margaret Mead (1901-1978) - `margaret-mead.png`
+- [x] Claude Lévi-Strauss (1908-2009) - `claude-levi-strauss.png`
+- [x] Zora Neale Hurston (1891-1960) - `zora-neale-hurston.png`
+- [x] Clifford Geertz (1926-2006) - `clifford-geertz.png`
+- [x] Mary Douglas (1921-2007) - `mary-douglas.png`
+- [x] David Graeber (1961-2020) - `david-graeber.png`
 
 ### Queer Theorists (6)
 - [x] Michel Foucault (1926-1984) - `michel_foucault.png`
