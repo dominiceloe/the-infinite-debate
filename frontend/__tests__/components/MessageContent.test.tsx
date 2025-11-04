@@ -22,9 +22,16 @@ describe('MessageContent', () => {
     const citations: TextCitation[] = [
       {
         id: 1,
-        text_id: 1,
+        debate_message: 1,
+        text: 1,
         text_title: 'The Republic',
+        text_author: 'Plato',
         text_slug: 'the-republic',
+        citation_text: 'The Republic',
+        match_confidence: 1.0,
+        match_method: 'manual',
+        verified: true,
+        created_at: '2025-01-01T00:00:00Z',
       },
     ]
     const content = 'In The Republic, Plato discusses justice.'
@@ -42,15 +49,29 @@ describe('MessageContent', () => {
     const citations: TextCitation[] = [
       {
         id: 1,
-        text_id: 1,
+        debate_message: 1,
+        text: 1,
         text_title: 'The Republic',
+        text_author: 'Plato',
         text_slug: 'the-republic',
+        citation_text: 'The Republic',
+        match_confidence: 1.0,
+        match_method: 'manual',
+        verified: true,
+        created_at: '2025-01-01T00:00:00Z',
       },
       {
         id: 2,
-        text_id: 2,
+        debate_message: 1,
+        text: 2,
         text_title: 'Nicomachean Ethics',
+        text_author: 'Aristotle',
         text_slug: 'nicomachean-ethics',
+        citation_text: 'Nicomachean Ethics',
+        match_confidence: 1.0,
+        match_method: 'manual',
+        verified: true,
+        created_at: '2025-01-01T00:00:00Z',
       },
     ]
     const content = 'In The Republic and Nicomachean Ethics, they discuss virtue.'
@@ -68,9 +89,16 @@ describe('MessageContent', () => {
     const citations: TextCitation[] = [
       {
         id: 1,
-        text_id: 1,
+        debate_message: 1,
+        text: 1,
         text_title: 'Ethics',
+        text_author: 'Spinoza',
         text_slug: 'ethics',
+        citation_text: 'Ethics',
+        match_confidence: 1.0,
+        match_method: 'manual',
+        verified: true,
+        created_at: '2025-01-01T00:00:00Z',
       },
     ]
     const content = 'In Ethics, Spinoza discusses Ethics of reason.'
@@ -88,9 +116,16 @@ describe('MessageContent', () => {
     const citations: TextCitation[] = [
       {
         id: 1,
-        text_id: 1,
+        debate_message: 1,
+        text: 1,
         text_title: 'The Republic',
+        text_author: 'Plato',
         text_slug: 'the-republic',
+        citation_text: 'The Republic',
+        match_confidence: 1.0,
+        match_method: 'manual',
+        verified: true,
+        created_at: '2025-01-01T00:00:00Z',
       },
     ]
     const content = 'This message does not mention any works.'
@@ -105,15 +140,29 @@ describe('MessageContent', () => {
     const citations: TextCitation[] = [
       {
         id: 1,
-        text_id: 1,
+        debate_message: 1,
+        text: 1,
         text_title: 'Ethics',
+        text_author: 'Spinoza',
         text_slug: 'ethics',
+        citation_text: 'Ethics',
+        match_confidence: 1.0,
+        match_method: 'manual',
+        verified: true,
+        created_at: '2025-01-01T00:00:00Z',
       },
       {
         id: 2,
-        text_id: 2,
+        debate_message: 1,
+        text: 2,
         text_title: 'Nicomachean Ethics',
+        text_author: 'Aristotle',
         text_slug: 'nicomachean-ethics',
+        citation_text: 'Nicomachean Ethics',
+        match_confidence: 1.0,
+        match_method: 'manual',
+        verified: true,
+        created_at: '2025-01-01T00:00:00Z',
       },
     ]
     const content = 'In Nicomachean Ethics, Aristotle discusses virtue.'

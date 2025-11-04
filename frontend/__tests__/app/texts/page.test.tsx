@@ -5,9 +5,22 @@ import LibraryPage from '@/app/texts/page'
 import * as AuthContext from '@/contexts/AuthContext'
 import { apiClient } from '@/lib/api'
 
-// Mock the API client
+// Mock the API client - Note: texts API doesn't exist yet in lib/api.ts
+// This is a forward-compatible mock for when the texts API is implemented
 vi.mock('@/lib/api', () => ({
   apiClient: {
+    personas: {
+      list: vi.fn(),
+      getBySlug: vi.fn(),
+      getByCategory: vi.fn(),
+    },
+    debates: {
+      list: vi.fn(),
+      create: vi.fn(),
+      getBySlug: vi.fn(),
+      generate: vi.fn(),
+      export: vi.fn(),
+    },
     texts: {
       getAll: vi.fn(),
     },
@@ -71,7 +84,8 @@ describe('LibraryPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Mock successful API response
-    vi.mocked(apiClient.texts.getAll).mockResolvedValue(mockTextsData)
+    // Type assertion needed because texts API doesn't exist yet in actual apiClient
+    vi.mocked((apiClient as any).texts.getAll).mockResolvedValue(mockTextsData)
   })
 
   it('renders the library page title', async () => {
@@ -403,7 +417,7 @@ describe('LibraryPage', () => {
       })
 
       // Mock pending API call
-      vi.mocked(apiClient.texts.getAll).mockImplementation(
+      vi.mocked((apiClient as any).texts.getAll).mockImplementation(
         () => new Promise(() => {}) // Never resolves
       )
 
@@ -426,7 +440,7 @@ describe('LibraryPage', () => {
       })
 
       // Mock API error
-      vi.mocked(apiClient.texts.getAll).mockRejectedValue(
+      vi.mocked((apiClient as any).texts.getAll).mockRejectedValue(
         new Error('Failed to fetch texts')
       )
 
@@ -451,7 +465,7 @@ describe('LibraryPage', () => {
       })
 
       // Mock empty response
-      vi.mocked(apiClient.texts.getAll).mockResolvedValue([])
+      vi.mocked((apiClient as any).texts.getAll).mockResolvedValue([])
 
       renderWithProviders(<LibraryPage />)
 

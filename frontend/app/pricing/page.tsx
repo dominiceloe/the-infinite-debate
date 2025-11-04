@@ -50,6 +50,8 @@ interface PricingTierTemplate {
   popular?: boolean;
 }
 
+// Beta Simplification: Hiding Pro and Enterprise tiers
+// Only show Free (trial) and Starter during beta launch
 const pricingTierTemplates: PricingTierTemplate[] = [
   {
     name: 'Free',
@@ -58,14 +60,15 @@ const pricingTierTemplates: PricingTierTemplate[] = [
     annualPrice: 0,
     color: '#6366f1',
     tier: 'free',
-    credits: 15,
+    credits: 10,  // Beta: Changed from 15 to 10
     badge: undefined,
     featuresTemplate: (count) => [
       `${count} iconic personas (Socrates, Plato, Einstein, etc.)`,
-      '15 debate credits',
+      '10 debate credits (7-day trial)',  // Beta: Updated from 15
+      '2 debates per day',  // Beta: Added rate limit info
       'No credit card required',
       'Perfect for trying out the platform',
-      'Upgrade anytime to unlock more',
+      'Upgrade anytime to unlock unlimited debates',
     ],
   },
   {
@@ -77,15 +80,20 @@ const pricingTierTemplates: PricingTierTemplate[] = [
     tier: 'starter',
     credits: 30,
     badge: 'Starter',
+    popular: true,  // Beta: Made Starter the popular choice
     featuresTemplate: (count) => [
       `${count} well-known thinkers`,
       '30 debate credits per month',
+      'Unlimited debates per day',  // Beta: Emphasize no rate limit
       'All free personas included',
       'Popular philosophers like Kant, Marx, Sartre',
       'Famous scientists like Galileo, Curie, Tesla',
       'Key theologians like Maimonides, Al-Ghazali',
     ],
   },
+  // Beta: Pro and Enterprise tiers hidden during beta launch
+  // Uncomment to re-enable post-beta:
+  /*
   {
     name: 'Pro',
     description: 'For serious intellectual exploration',
@@ -124,6 +132,7 @@ const pricingTierTemplates: PricingTierTemplate[] = [
       'Custom pricing for institutions',
     ],
   },
+  */
 ];
 
 export default function PricingPage() {
