@@ -568,7 +568,7 @@ class TestRateLimitingIntegration:
         for i in range(5):
             data = {
                 'title': f'Paid Debate {i+1}',
-                'topic': f'Topic {i+1}',
+                'topic': f'What is the meaning of life {i+1}?',  # Fixed: Must be at least 10 characters
                 'participant_ids': [test_personas[0].id, test_personas[1].id],
                 'max_rounds': 3,
                 'depth_level': 'intermediate'
