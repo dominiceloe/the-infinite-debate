@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useTypewriter } from '@/hooks/useTypewriter'
 
 describe('useTypewriter', () => {
@@ -239,7 +239,7 @@ describe('useTypewriter', () => {
     const onComplete1 = vi.fn()
     const onComplete2 = vi.fn()
 
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ onComplete }) => useTypewriter({ text: 'Hello', speed: 150, onComplete }),
       { initialProps: { onComplete: onComplete1 } }
     )

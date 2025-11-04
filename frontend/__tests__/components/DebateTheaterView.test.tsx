@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import DebateTheaterView from '@/components/DebateTheaterView'
 import type { Debate, Persona, DebateMessage, TextCitation } from '@/types'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -10,10 +9,10 @@ vi.mock('@/hooks/useTypewriter')
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: ({ src, alt, onError, ...props }: any) => {
+  default: ({ src, alt, onError, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { onError?: () => void }) => {
     return (
       <img
-        src={src}
+        src={src as string}
         alt={alt}
         onError={onError}
         {...props}
@@ -24,7 +23,7 @@ vi.mock('next/image', () => ({
 
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
-  default: ({ href, children, ...props }: any) => {
+  default: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => {
     return (
       <a href={href} {...props}>
         {children}
@@ -35,7 +34,7 @@ vi.mock('next/link', () => ({
 
 // Mock MessageContent component
 vi.mock('@/components/MessageContent', () => ({
-  default: ({ content, citations }: any) => <>{content}</>,
+  default: ({ content }: { content: string; citations?: unknown[] }) => <>{content}</>,
 }))
 
 // Mock personas for testing
@@ -520,7 +519,7 @@ describe('DebateTheaterView', () => {
         { ...mockPersona1, id: 8, name: 'Person8', birth_year: -200 },
       ]
       const debate = createMockDebate('completed', [], manyPersonas as Persona[])
-      const { container } = render(<DebateTheaterView debate={debate} />)
+      render(<DebateTheaterView debate={debate} />)
 
       expect(screen.getByText('Person4')).toBeInTheDocument()
       expect(screen.getByText('Person8')).toBeInTheDocument()
@@ -601,7 +600,7 @@ describe('DebateTheaterView', () => {
         content: 'Line one\n\nLine two\nLine three',
       }
       const debate = createMockDebate('completed', [messageWithWhitespace])
-      const { container } = render(<DebateTheaterView debate={debate} />)
+      render(<DebateTheaterView debate={debate} />)
 
       // Check that message content is rendered (MessageContent mock will show the content)
       expect(screen.getByText(/Line one/)).toBeInTheDocument()

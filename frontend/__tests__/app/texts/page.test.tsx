@@ -29,9 +29,9 @@ vi.mock('@/lib/api', () => ({
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: ({ src, alt, ...props }: any) => {
+  default: ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} {...props} />
+    return <img src={src as string} alt={alt} {...props} />
   },
 }))
 
@@ -85,7 +85,7 @@ describe('LibraryPage', () => {
     vi.clearAllMocks()
     // Mock successful API response
     // Type assertion needed because texts API doesn't exist yet in actual apiClient
-    vi.mocked((apiClient as any).texts.getAll).mockResolvedValue(mockTextsData)
+    vi.mocked((apiClient as { texts: { getAll: () => Promise<unknown> } }).texts.getAll).mockResolvedValue(mockTextsData)
   })
 
   it('renders the library page title', async () => {
@@ -417,7 +417,7 @@ describe('LibraryPage', () => {
       })
 
       // Mock pending API call
-      vi.mocked((apiClient as any).texts.getAll).mockImplementation(
+      vi.mocked((apiClient as { texts: { getAll: () => Promise<unknown> } }).texts.getAll).mockImplementation(
         () => new Promise(() => {}) // Never resolves
       )
 
@@ -440,7 +440,7 @@ describe('LibraryPage', () => {
       })
 
       // Mock API error
-      vi.mocked((apiClient as any).texts.getAll).mockRejectedValue(
+      vi.mocked((apiClient as { texts: { getAll: () => Promise<unknown> } }).texts.getAll).mockRejectedValue(
         new Error('Failed to fetch texts')
       )
 
@@ -465,7 +465,7 @@ describe('LibraryPage', () => {
       })
 
       // Mock empty response
-      vi.mocked((apiClient as any).texts.getAll).mockResolvedValue([])
+      vi.mocked((apiClient as { texts: { getAll: () => Promise<unknown> } }).texts.getAll).mockResolvedValue([])
 
       renderWithProviders(<LibraryPage />)
 

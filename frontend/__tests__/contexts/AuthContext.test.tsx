@@ -24,7 +24,7 @@ vi.mock('axios', () => {
     },
   }
 })
-const mockedAxios = axios as any
+const mockedAxios = axios as unknown as { post: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn> }
 
 // Mock Next.js router
 const mockPush = vi.fn()
@@ -61,7 +61,7 @@ Object.defineProperty(window, 'localStorage', {
 })
 
 describe('AuthContext', () => {
-  let mockInstance: any
+  let mockInstance: { post: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn> }
 
   beforeEach(() => {
     vi.clearAllMocks()
