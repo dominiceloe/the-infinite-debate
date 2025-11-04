@@ -99,20 +99,21 @@ class DebateGenerator:
                 # Each participant speaks in chronological order
                 for persona in participants:
                     # Generate response (uses cached previous_messages list)
-                    content = self._generate_response(
+                    # Beta: Now returns (content, tokens_used) tuple
+                    content, tokens_used = self._generate_response(
                         debate=debate,
                         persona=persona,
                         round_number=round_num,
                         previous_messages=previous_messages
                     )
 
-                    # Save message
+                    # Save message with token usage tracking
                     message = DebateMessage.objects.create(
                         debate=debate,
                         persona=persona,
                         round_number=round_num,
                         content=content,
-                        tokens_used=0  # Could track this with API response
+                        tokens_used=tokens_used  # Beta: Track actual token usage from Claude API
                     )
 
                     # Append to transcript
@@ -167,7 +168,7 @@ class DebateGenerator:
             previous_messages: List of previous DebateMessage objects
 
         Returns:
-            str: Generated response content
+            tuple: (content, tokens_used) - Generated response and token usage
         """
         # Build prompts
         system_prompt = build_system_prompt(persona, debate.depth_level)
@@ -197,7 +198,11 @@ class DebateGenerator:
         # Extract text content
         content = response.content[0].text
 
-        return content
+        # Beta: Track token usage from Claude API response
+        # usage.input_tokens = prompt tokens, usage.output_tokens = completion tokens
+        tokens_used = response.usage.input_tokens + response.usage.output_tokens
+
+        return content, tokens_used
 
     def _build_transcript_header(self, debate, participants):
         """
