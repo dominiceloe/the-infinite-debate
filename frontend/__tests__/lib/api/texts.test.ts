@@ -216,7 +216,7 @@ describe('texts API client', () => {
       await fetchTexts({ category: 'philosophy', era: undefined })
 
       const url = mockFetch.mock.calls[0][0] as string
-      expect(url).toContain('category=Philosophy')
+      expect(url).toContain('category=philosophy')
       expect(url).not.toContain('era=')
     })
   })
