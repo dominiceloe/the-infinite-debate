@@ -24,6 +24,16 @@ from payments.models import StripePayment, StripeSubscriptionHistory
 
 
 @pytest.fixture(autouse=True)
+def mock_stripe_settings():
+    """Mock Stripe settings for CI environment."""
+    with patch.object(settings, 'STRIPE_STARTER_MONTHLY_PRICE_ID', 'price_starter_monthly'):
+        with patch.object(settings, 'STRIPE_STARTER_YEARLY_PRICE_ID', 'price_starter_yearly'):
+            with patch.object(settings, 'STRIPE_PRO_MONTHLY_PRICE_ID', 'price_pro_monthly'):
+                with patch.object(settings, 'STRIPE_PRO_YEARLY_PRICE_ID', 'price_pro_yearly'):
+                    yield
+
+
+@pytest.fixture(autouse=True)
 def clear_stripe_ids(db):
     """Auto-clear all Stripe IDs from users before each test."""
     User.objects.all().update(
@@ -141,7 +151,7 @@ class TestCreateCheckoutSessionView:
         mock_session_create.assert_called_once()
         session_kwargs = mock_session_create.call_args[1]
         assert session_kwargs['mode'] == 'subscription'
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_MONTHLY_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == 'price_starter_monthly'
 
         # Verify user was updated with customer ID
         test_user.refresh_from_db()
@@ -171,7 +181,7 @@ class TestCreateCheckoutSessionView:
         # Verify session created with pro price
         session_kwargs = mock_session_create.call_args[1]
         assert session_kwargs['customer'] == 'cus_existing123'
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_PRO_MONTHLY_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == 'price_pro_monthly'
 
     @patch('stripe.Subscription.modify')
     @patch('stripe.Subscription.retrieve')
@@ -203,7 +213,7 @@ class TestCreateCheckoutSessionView:
         # Verify subscription was modified
         mock_modify.assert_called_once()
         modify_kwargs = mock_modify.call_args[1]
-        assert modify_kwargs['items'][0]['price'] == settings.STRIPE_PRO_MONTHLY_PRICE_ID
+        assert modify_kwargs['items'][0]['price'] == 'price_pro_monthly'
         assert modify_kwargs['proration_behavior'] == 'create_prorations'
 
         # Verify user tier and credits were updated
@@ -677,7 +687,7 @@ class TestCreateCheckoutSessionAnnualBilling:
 
         # Verify correct price ID used
         session_kwargs = mock_session_create.call_args[1]
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_YEARLY_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == 'price_starter_yearly'
         assert session_kwargs['metadata']['billing_period'] == 'yearly'
 
     @patch('stripe.checkout.Session.create')
@@ -700,7 +710,7 @@ class TestCreateCheckoutSessionAnnualBilling:
 
         assert response.status_code == status.HTTP_200_OK
         session_kwargs = mock_session_create.call_args[1]
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_PRO_YEARLY_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == 'price_pro_yearly'
 
     @patch('stripe.checkout.Session.create')
     def test_create_checkout_starter_monthly(
@@ -722,7 +732,7 @@ class TestCreateCheckoutSessionAnnualBilling:
 
         assert response.status_code == status.HTTP_200_OK
         session_kwargs = mock_session_create.call_args[1]
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_MONTHLY_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == 'price_starter_monthly'
         assert session_kwargs['metadata']['billing_period'] == 'monthly'
 
     @patch('stripe.checkout.Session.create')
@@ -745,7 +755,7 @@ class TestCreateCheckoutSessionAnnualBilling:
 
         assert response.status_code == status.HTTP_200_OK
         session_kwargs = mock_session_create.call_args[1]
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_PRO_MONTHLY_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == 'price_pro_monthly'
 
     def test_invalid_billing_period_returns_400(self, authenticated_client):
         """Test that invalid billing period returns 400 error."""
@@ -776,7 +786,7 @@ class TestCreateCheckoutSessionAnnualBilling:
 
         assert response.status_code == status.HTTP_200_OK
         session_kwargs = mock_session_create.call_args[1]
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_MONTHLY_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == 'price_starter_monthly'
         assert session_kwargs['metadata']['billing_period'] == 'monthly'
 
     @patch('stripe.Subscription.modify')
@@ -801,7 +811,7 @@ class TestCreateCheckoutSessionAnnualBilling:
 
         # Verify subscription modified to yearly price
         modify_kwargs = mock_modify.call_args[1]
-        assert modify_kwargs['items'][0]['price'] == settings.STRIPE_STARTER_YEARLY_PRICE_ID
+        assert modify_kwargs['items'][0]['price'] == 'price_starter_yearly'
 
     @patch('stripe.Subscription.modify')
     @patch('stripe.Subscription.retrieve')
@@ -826,7 +836,7 @@ class TestCreateCheckoutSessionAnnualBilling:
 
         # Verify both tier and billing period changed
         modify_kwargs = mock_modify.call_args[1]
-        assert modify_kwargs['items'][0]['price'] == settings.STRIPE_PRO_YEARLY_PRICE_ID
+        assert modify_kwargs['items'][0]['price'] == 'price_pro_yearly'
 
         # Verify user tier and credits updated
         test_user_starter.refresh_from_db()
