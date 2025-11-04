@@ -78,7 +78,7 @@ def stripe_event_subscription_created():
                 'items': {
                     'data': [{
                         'price': {
-                            'id': settings.STRIPE_STUDENT_PRICE_ID
+                            'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
                         }
                     }]
                 }
@@ -101,7 +101,7 @@ def stripe_event_subscription_updated():
                 'items': {
                     'data': [{
                         'price': {
-                            'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                            'id': settings.STRIPE_PRO_MONTHLY_PRICE_ID
                         }
                     }]
                 }
@@ -369,7 +369,7 @@ class TestSubscriptionCreated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -419,7 +419,7 @@ class TestSubscriptionCreated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': settings.STRIPE_PRO_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -504,7 +504,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': settings.STRIPE_PRO_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -551,7 +551,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -586,7 +586,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -629,7 +629,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID  # Same tier
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID  # Same tier
                             }
                         }]
                     }
@@ -859,7 +859,7 @@ class TestWebhookErrorHandling:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -929,7 +929,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -962,7 +962,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': settings.STRIPE_PRO_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -1000,7 +1000,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': settings.STRIPE_PRO_MONTHLY_PRICE_ID
                             }
                         }]
                     }
@@ -1034,7 +1034,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
                             }
                         }]
                     }
