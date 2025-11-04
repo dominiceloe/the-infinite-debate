@@ -38,28 +38,30 @@ def valid_registration_data():
 
 @pytest.mark.django_db
 class TestRegistrationCardRequirement:
-    """Test credit card requirement for registration."""
+    """Test credit card requirement for registration (OBSOLETE - feature removed)."""
 
-    def test_registration_requires_payment_method_id(self, api_client):
-        """Registration should fail without payment_method_id."""
+    @pytest.mark.skip(reason="Card requirement removed - trials are now free")
+    def test_registration_requires_payment_method_id_obsolete(self, api_client):
+        """Registration now succeeds without payment_method_id (free trial)."""
         data = {
             'username': 'testuser',
             'email': 'test@example.com',
             'password': 'SecurePass123!',
             'password_confirm': 'SecurePass123!',
-            # Missing payment_method_id
+            # No payment_method_id needed for free trial
         }
 
         response = api_client.post('/api/auth/register/', data)
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert 'payment_method_id' in response.data
-        assert User.objects.filter(username='testuser').count() == 0
+        assert response.status_code == status.HTTP_201_CREATED
+        assert 'user' in response.data
+        assert User.objects.filter(username='testuser').count() == 1
 
+    @pytest.mark.skip(reason="Card requirement removed - trials are now free")
     @patch('stripe.Customer.create')
     @patch('stripe.PaymentMethod.attach')
     @patch('stripe.Customer.modify')
-    def test_successful_registration_with_valid_card(
+    def test_successful_registration_with_valid_card_obsolete(
         self,
         mock_customer_modify,
         mock_payment_attach,
@@ -84,7 +86,7 @@ class TestRegistrationCardRequirement:
         assert user.stripe_customer_id == 'cus_test123'
         assert user.stripe_payment_method_id == 'pm_test_valid_card'
         assert user.subscription_tier == 'trial'
-        assert user.credits_remaining == 15
+        assert user.credits_remaining == 10  # Beta: Changed from 15 to 10
 
         # Verify Stripe calls
         mock_customer_create.assert_called_once()
@@ -96,7 +98,8 @@ class TestRegistrationCardRequirement:
 
     @patch('stripe.Customer.create')
     @patch('stripe.PaymentMethod.attach')
-    def test_registration_fails_with_declined_card(
+    @pytest.mark.skip(reason="Card requirement removed - trials are now free")
+    def test_registration_fails_with_declined_card_obsolete(
         self,
         mock_payment_attach,
         mock_customer_create,
@@ -127,7 +130,8 @@ class TestRegistrationCardRequirement:
         assert User.objects.filter(username='testuser').count() == 0
 
     @patch('stripe.Customer.create')
-    def test_registration_fails_with_stripe_api_error(
+    @pytest.mark.skip(reason="Card requirement removed - trials are now free")
+    def test_registration_fails_with_stripe_api_error_obsolete(
         self,
         mock_customer_create,
         api_client,
@@ -152,7 +156,8 @@ class TestRegistrationCardRequirement:
     @patch('stripe.Customer.create')
     @patch('stripe.PaymentMethod.attach')
     @patch('stripe.Customer.modify')
-    def test_payment_method_stored_correctly(
+    @pytest.mark.skip(reason="Card requirement removed - trials are now free")
+    def test_payment_method_stored_correctly_obsolete(
         self,
         mock_customer_modify,
         mock_payment_attach,
@@ -176,7 +181,8 @@ class TestRegistrationCardRequirement:
     @patch('stripe.Customer.create')
     @patch('stripe.PaymentMethod.attach')
     @patch('stripe.Customer.modify')
-    def test_default_payment_method_set(
+    @pytest.mark.skip(reason="Card requirement removed - trials are now free")
+    def test_default_payment_method_set_obsolete(
         self,
         mock_customer_modify,
         mock_payment_attach,
@@ -203,7 +209,8 @@ class TestRegistrationCardRequirement:
 
     @patch('stripe.Customer.create')
     @patch('stripe.PaymentMethod.attach')
-    def test_registration_with_insufficient_funds_card(
+    @pytest.mark.skip(reason="Card requirement removed - trials are now free")
+    def test_registration_with_insufficient_funds_card_obsolete(
         self,
         mock_payment_attach,
         mock_customer_create,

@@ -141,7 +141,7 @@ class TestCreateCheckoutSessionView:
         mock_session_create.assert_called_once()
         session_kwargs = mock_session_create.call_args[1]
         assert session_kwargs['mode'] == 'subscription'
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STUDENT_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_STARTER_MONTHLY_PRICE_ID
 
         # Verify user was updated with customer ID
         test_user.refresh_from_db()
@@ -171,7 +171,7 @@ class TestCreateCheckoutSessionView:
         # Verify session created with pro price
         session_kwargs = mock_session_create.call_args[1]
         assert session_kwargs['customer'] == 'cus_existing123'
-        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_SCHOLAR_PRICE_ID
+        assert session_kwargs['line_items'][0]['price'] == settings.STRIPE_PRO_MONTHLY_PRICE_ID
 
     @patch('stripe.Subscription.modify')
     @patch('stripe.Subscription.retrieve')
@@ -203,7 +203,7 @@ class TestCreateCheckoutSessionView:
         # Verify subscription was modified
         mock_modify.assert_called_once()
         modify_kwargs = mock_modify.call_args[1]
-        assert modify_kwargs['items'][0]['price'] == settings.STRIPE_SCHOLAR_PRICE_ID
+        assert modify_kwargs['items'][0]['price'] == settings.STRIPE_PRO_MONTHLY_PRICE_ID
         assert modify_kwargs['proration_behavior'] == 'create_prorations'
 
         # Verify user tier and credits were updated
