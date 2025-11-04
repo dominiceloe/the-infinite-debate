@@ -107,7 +107,7 @@ class TestRegisterView:
         assert user.last_name == 'Doe'
         assert user.subscription_tier == 'trial'
         assert user.subscription_status == 'active'
-        assert user.credits_remaining == 15
+        assert user.credits_remaining == 10  # Beta: Changed from 15 to 10
         assert user.trial_start_date is not None
         assert user.trial_end_date is not None
         assert not user.email_verified
@@ -376,7 +376,7 @@ class TestUserProfileView:
         assert response.data['username'] == 'trialuser'
         assert response.data['email'] == 'trial@example.com'
         assert response.data['subscription_tier'] == 'trial'
-        assert response.data['credits_remaining'] == 15
+        assert response.data['credits_remaining'] == 10  # Beta: Changed from 15 to 10
         assert 'is_on_trial' in response.data
         assert 'is_trial_expired' in response.data
 
@@ -604,7 +604,7 @@ class TestSubscriptionStatusView:
         assert response.status_code == status.HTTP_200_OK
         assert response.data['tier'] == 'trial'
         assert response.data['status'] == 'active'
-        assert response.data['credits_remaining'] == 15
+        assert response.data['credits_remaining'] == 10  # Beta: Changed from 15 to 10
         assert response.data['is_trial'] is True
         assert 'trial_end_date' in response.data
         assert 'days_until_trial_end' in response.data
@@ -808,12 +808,12 @@ class TestCreditBalanceAndTiers:
     """Test credit balance checks and tier validation."""
 
     def test_trial_user_has_correct_credits(self, api_client, trial_user):
-        """Test trial user starts with 15 credits."""
+        """Test trial user starts with 10 credits (Beta: Changed from 15)."""
         api_client.force_authenticate(user=trial_user)
         response = api_client.get('/api/auth/profile/')
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.data['credits_remaining'] == 15
+        assert response.data['credits_remaining'] == 10  # Beta: Changed from 15 to 10
         assert response.data['subscription_tier'] == 'trial'
 
     def test_pro_user_has_correct_credits(self, api_client, pro_user):

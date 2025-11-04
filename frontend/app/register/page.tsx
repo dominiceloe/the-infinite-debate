@@ -14,40 +14,26 @@ import {
   Alert,
   CircularProgress,
   Divider,
-  Paper,
 } from '@mui/material';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import type { RegisterRequest } from '@/types/auth';
-import type { StripeCardChangeEvent } from '@/types/api';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import LockIcon from '@mui/icons-material/Lock';
 
-// Initialize Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// Beta: Stripe imports removed - no credit card required for trial
+// Uncomment when payment is re-enabled:
+// import { loadStripe } from '@stripe/stripe-js';
+// import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+// import type { StripeCardChangeEvent } from '@/types/api';
+// import CreditCardIcon from '@mui/icons-material/CreditCard';
+// import LockIcon from '@mui/icons-material/Lock';
+// import { Paper } from '@mui/material';
 
-// Card Element styling
-const CARD_ELEMENT_OPTIONS = {
-  style: {
-    base: {
-      fontSize: '16px',
-      color: '#424770',
-      '::placeholder': {
-        color: '#aab7c4',
-      },
-      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    },
-    invalid: {
-      color: '#9e2146',
-    },
-  },
-  hidePostalCode: false,
-};
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// const CARD_ELEMENT_OPTIONS = { ... };
 
 function RegisterForm() {
   const { register, isLoading: authLoading } = useAuth();
-  const stripe = useStripe();
-  const elements = useElements();
+  // Beta: Stripe hooks removed - no credit card required
+  // const stripe = useStripe();
+  // const elements = useElements();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -58,9 +44,10 @@ function RegisterForm() {
     last_name: '',
   });
   const [error, setError] = useState('');
-  const [cardError, setCardError] = useState('');
+  // Beta: Card-related state removed
+  // const [cardError, setCardError] = useState('');
+  // const [cardComplete, setCardComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [cardComplete, setCardComplete] = useState(false);
 
   const handleChange = (field: string) => (
     e: React.ChangeEvent<HTMLInputElement>
@@ -71,10 +58,11 @@ function RegisterForm() {
     }));
   };
 
-  const handleCardChange = (event: StripeCardChangeEvent) => {
-    setCardError(event.error ? event.error.message : '');
-    setCardComplete(event.complete);
-  };
+  // Beta: Card change handler removed
+  // const handleCardChange = (event: StripeCardChangeEvent) => {
+  //   setCardError(event.error ? event.error.message : '');
+  //   setCardComplete(event.complete);
+  // };
 
   const validateForm = (): string | null => {
     if (!formData.username || !formData.email || !formData.password || !formData.password_confirm) {
@@ -97,9 +85,10 @@ function RegisterForm() {
       return 'Passwords do not match.';
     }
 
-    if (!cardComplete) {
-      return 'Please enter valid card information.';
-    }
+    // Beta: No credit card required
+    // if (!cardComplete) {
+    //   return 'Please enter valid card information.';
+    // }
 
     return null;
   };
@@ -107,7 +96,8 @@ function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setCardError('');
+    // Beta: cardError state removed
+    // setCardError('');
 
     const validationError = validateForm();
     if (validationError) {
@@ -115,43 +105,23 @@ function RegisterForm() {
       return;
     }
 
-    if (!stripe || !elements) {
-      setError('Stripe has not loaded yet. Please try again.');
-      return;
-    }
+    // Beta: Skip Stripe validation - no credit card required
+    // if (!stripe || !elements) {
+    //   setError('Stripe has not loaded yet. Please try again.');
+    //   return;
+    // }
 
     setIsLoading(true);
 
     try {
-      // Create payment method from card element
-      const cardElement = elements.getElement(CardElement);
-      if (!cardElement) {
-        throw new Error('Card element not found');
-      }
+      // Beta: Skip Stripe payment method creation
+      // No credit card required during registration
+      // Users will add payment method when upgrading to paid tier
 
-      const { error: stripeError, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: cardElement,
-        billing_details: {
-          name: `${formData.first_name} ${formData.last_name}`.trim() || formData.username,
-          email: formData.email,
-        },
-      });
-
-      if (stripeError) {
-        setCardError(stripeError.message || 'Card validation failed');
-        setIsLoading(false);
-        return;
-      }
-
-      if (!paymentMethod) {
-        throw new Error('Failed to create payment method');
-      }
-
-      // Submit registration with payment method ID
+      // Submit registration WITHOUT payment method ID
       const registerData: RegisterRequest = {
         ...formData,
-        payment_method_id: paymentMethod.id,
+        // payment_method_id is now optional in backend
       };
 
       await register(registerData);
@@ -212,13 +182,13 @@ function RegisterForm() {
 
         <Card>
           <CardContent sx={{ p: 4 }}>
-            {/* Trial Info Banner - Updated */}
-            <Alert severity="info" sx={{ mb: 3 }}>
+            {/* Trial Info Banner - Beta Simplification */}
+            <Alert severity="success" sx={{ mb: 3 }}>
               <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                Free 7-Day Trial
+                Free 7-Day Trial - No Credit Card Required
               </Typography>
               <Typography variant="caption">
-                Get 15 free credits to create debates. Credit card required, but you won&apos;t be charged until trial ends.
+                Get 10 free credits and create up to 2 debates per day. Upgrade anytime to Starter for unlimited debates.
               </Typography>
             </Alert>
 
@@ -310,7 +280,8 @@ function RegisterForm() {
                 sx={{ mb: 3 }}
               />
 
-              {/* Credit Card Section */}
+              {/* Beta: Credit Card Section REMOVED - No payment required for trial */}
+              {/* Uncomment to re-enable post-beta:
               <Divider sx={{ my: 3 }}>
                 <Typography variant="caption" color="text.secondary">
                   Payment Information
@@ -350,16 +321,17 @@ function RegisterForm() {
                   Your payment information is encrypted and secure. You won&apos;t be charged until your 7-day trial ends.
                 </Typography>
               </Box>
+              */}
 
               <Button
                 fullWidth
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={isLoading || !stripe}
+                disabled={isLoading}
                 sx={{ mb: 2, py: 1.5 }}
               >
-                {isLoading ? <CircularProgress size={24} /> : 'Start Free Trial'}
+                {isLoading ? <CircularProgress size={24} /> : 'Create Free Account'}
               </Button>
 
               <Box sx={{ textAlign: 'center' }}>
@@ -398,11 +370,16 @@ function RegisterForm() {
   );
 }
 
-// Wrap the form with Stripe Elements provider
+// Beta: Stripe Elements wrapper removed - no payment required
 export default function RegisterPage() {
-  return (
-    <Elements stripe={stripePromise}>
-      <RegisterForm />
-    </Elements>
-  );
+  return <RegisterForm />;
 }
+
+// Uncomment when payment is re-enabled:
+// export default function RegisterPage() {
+//   return (
+//     <Elements stripe={stripePromise}>
+//       <RegisterForm />
+//     </Elements>
+//   );
+// }

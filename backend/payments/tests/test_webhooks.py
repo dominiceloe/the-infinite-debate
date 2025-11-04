@@ -26,6 +26,16 @@ from users.models import User
 from payments.models import StripeEvent, StripePayment, StripeSubscriptionHistory
 
 
+@pytest.fixture(autouse=True)
+def mock_stripe_settings():
+    """Mock Stripe settings for CI environment."""
+    with patch.object(settings, 'STRIPE_STARTER_MONTHLY_PRICE_ID', 'price_starter_monthly'):
+        with patch.object(settings, 'STRIPE_STARTER_YEARLY_PRICE_ID', 'price_starter_yearly'):
+            with patch.object(settings, 'STRIPE_PRO_MONTHLY_PRICE_ID', 'price_pro_monthly'):
+                with patch.object(settings, 'STRIPE_PRO_YEARLY_PRICE_ID', 'price_pro_yearly'):
+                    yield
+
+
 @pytest.fixture
 def webhook_client():
     """Provide an API client for webhook testing (no auth required)."""
@@ -78,7 +88,7 @@ def stripe_event_subscription_created():
                 'items': {
                     'data': [{
                         'price': {
-                            'id': settings.STRIPE_STUDENT_PRICE_ID
+                            'id': 'price_starter_monthly'
                         }
                     }]
                 }
@@ -101,7 +111,7 @@ def stripe_event_subscription_updated():
                 'items': {
                     'data': [{
                         'price': {
-                            'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                            'id': 'price_pro_monthly'
                         }
                     }]
                 }
@@ -369,7 +379,7 @@ class TestSubscriptionCreated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': 'price_starter_monthly'
                             }
                         }]
                     }
@@ -419,7 +429,7 @@ class TestSubscriptionCreated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': 'price_pro_monthly'
                             }
                         }]
                     }
@@ -504,7 +514,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': 'price_pro_monthly'
                             }
                         }]
                     }
@@ -551,7 +561,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': 'price_starter_monthly'
                             }
                         }]
                     }
@@ -586,7 +596,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': 'price_starter_monthly'
                             }
                         }]
                     }
@@ -629,7 +639,7 @@ class TestSubscriptionUpdated:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID  # Same tier
+                                'id': 'price_starter_monthly'  # Same tier
                             }
                         }]
                     }
@@ -859,7 +869,7 @@ class TestWebhookErrorHandling:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': 'price_starter_monthly'
                             }
                         }]
                     }
@@ -929,7 +939,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': 'price_starter_monthly'
                             }
                         }]
                     }
@@ -962,7 +972,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': 'price_pro_monthly'
                             }
                         }]
                     }
@@ -1000,7 +1010,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_SCHOLAR_PRICE_ID
+                                'id': 'price_pro_monthly'
                             }
                         }]
                     }
@@ -1034,7 +1044,7 @@ class TestCreditAllocation:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STUDENT_PRICE_ID
+                                'id': 'price_starter_monthly'
                             }
                         }]
                     }
@@ -1154,7 +1164,7 @@ class TestWebhooksWithAnnualBilling:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_STARTER_MONTHLY_PRICE_ID
+                                'id': 'price_starter_monthly'
                             }
                         }]
                     }
@@ -1192,7 +1202,7 @@ class TestWebhooksWithAnnualBilling:
                     'items': {
                         'data': [{
                             'price': {
-                                'id': settings.STRIPE_PRO_MONTHLY_PRICE_ID
+                                'id': 'price_pro_monthly'
                             }
                         }]
                     }

@@ -24,7 +24,7 @@ vi.mock('axios', () => {
     },
   }
 })
-const mockedAxios = axios as any
+const mockedAxios = axios as unknown as { post: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn> }
 
 // Mock Next.js router
 const mockPush = vi.fn()
@@ -61,7 +61,7 @@ Object.defineProperty(window, 'localStorage', {
 })
 
 describe('AuthContext', () => {
-  let mockInstance: any
+  let mockInstance: { post: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn> }
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -255,7 +255,7 @@ describe('AuthContext', () => {
       username: 'newuser',
       email: 'new@example.com',
       password: 'password123',
-      password2: 'password123',
+      password_confirm: 'password123',  // Fixed: Changed from password2 to password_confirm
     })
 
     // Wait for state to update after auto-login

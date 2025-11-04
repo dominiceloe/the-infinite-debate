@@ -22,5 +22,12 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
+// Mock next/font/google
+vi.mock('next/font/google', () => ({
+  Inter: () => ({ className: 'inter' }),
+  Playfair_Display: () => ({ className: 'playfair-display' }),
+  Roboto: () => ({ className: 'roboto' }),
+}))
+
 // Mock environment variables
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8000'

@@ -88,6 +88,7 @@ class TestCeleryDebateGeneration:
 
         mock_message = MagicMock()
         mock_message.content = [MagicMock(text='This is a philosophical response about knowledge.')]
+        mock_message.usage = MagicMock(input_tokens=100, output_tokens=50)
         mock_client.messages.create.return_value = mock_message
 
         # Execute task in eager mode (synchronous for testing)
@@ -119,6 +120,7 @@ class TestCeleryDebateGeneration:
 
         mock_message = MagicMock()
         mock_message.content = [MagicMock(text='Knowledge is justified true belief.')]
+        mock_message.usage = MagicMock(input_tokens=100, output_tokens=50)
         mock_client.messages.create.return_value = mock_message
 
         # Execute task
@@ -150,6 +152,7 @@ class TestCeleryDebateGeneration:
 
         mock_message = MagicMock()
         mock_message.content = [MagicMock(text='A brief philosophical insight.')]
+        mock_message.usage = MagicMock(input_tokens=100, output_tokens=50)
         mock_client.messages.create.return_value = mock_message
 
         # Execute task
@@ -176,6 +179,7 @@ class TestCeleryDebateGeneration:
 
         mock_message = MagicMock()
         mock_message.content = [MagicMock(text='Philosophical wisdom.')]
+        mock_message.usage = MagicMock(input_tokens=100, output_tokens=50)
         mock_client.messages.create.return_value = mock_message
 
         # Execute task
@@ -226,6 +230,7 @@ class TestCeleryDebateGeneration:
 
         mock_message = MagicMock()
         mock_message.content = [MagicMock(text='Knowledge stems from questioning.')]
+        mock_message.usage = MagicMock(input_tokens=100, output_tokens=50)
         mock_client.messages.create.return_value = mock_message
 
         # Record time before task execution
@@ -275,6 +280,7 @@ class TestCeleryDebateGeneration:
 
         mock_message = MagicMock()
         mock_message.content = [MagicMock(text='Epistemic reflection.')]
+        mock_message.usage = MagicMock(input_tokens=100, output_tokens=50)
         mock_client.messages.create.return_value = mock_message
 
         # Execute task
@@ -319,6 +325,7 @@ class TestCeleryDebateGeneration:
 
         mock_message = MagicMock()
         mock_message.content = [MagicMock(text='Virtue is excellence of character.')]
+        mock_message.usage = MagicMock(input_tokens=100, output_tokens=50)
         mock_client.messages.create.return_value = mock_message
 
         # Execute both tasks

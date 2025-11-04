@@ -194,6 +194,14 @@ class DebateCreateSerializer(serializers.ModelSerializer):
         except ValidationError as e:
             raise ValidationError(f"Invalid debate configuration: {str(e)}")
 
+        # Beta: Check daily debate limit (2/day for trial users)
+        if not user.can_create_debate_today():
+            debates_today = user.get_debates_created_today()
+            raise ValidationError(
+                f"Daily debate limit reached ({debates_today}/{user.daily_debate_limit}). "
+                "Trial users can create 2 debates per day. Upgrade to Starter for unlimited debates."
+            )
+
         # Validate user has sufficient credits
         can_proceed, error_message = validate_user_credits(user, required_credits)
         if not can_proceed:

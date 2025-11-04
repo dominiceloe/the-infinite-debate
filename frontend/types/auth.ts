@@ -37,7 +37,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   password_confirm: string;
-  payment_method_id: string;
+  payment_method_id?: string;  // Beta: Optional - no credit card required for trial
   first_name?: string;
   last_name?: string;
 }
