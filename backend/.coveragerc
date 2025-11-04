@@ -23,6 +23,12 @@ omit =
     */conftest.py
     */setup.py
     */management/commands/*
+    analyze_misattributions.py
+    batch_ingest.py
+    verify_tracker.py
+    ingest_all_personas.py
+    ingest_all_personas_v2.py
+    fix_*.py
 
 [report]
 precision = 2
