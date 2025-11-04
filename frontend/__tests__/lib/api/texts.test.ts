@@ -34,26 +34,38 @@ describe('texts API client', () => {
           slug: 'republic',
           title: 'The Republic',
           author: 'Plato',
-          era: 'Ancient',
-          category: 'Philosophy',
-          year_written: -380,
-          language: 'Greek',
+          era: 'ancient',
+          category: 'philosophy',
+          publication_year: -380,
+          original_language: 'Greek',
           description: 'Dialogue on justice',
           source_url: 'https://example.com/republic',
           citation_count: 50,
+          word_count: 100000,
+          reading_difficulty: 'advanced',
+          is_published: true,
+          processing_status: 'ready',
+          section_count: 10,
+          created_at: '2024-01-01T00:00:00Z',
         },
         {
           id: 2,
           slug: 'meditations',
           title: 'Meditations',
           author: 'Marcus Aurelius',
-          era: 'Ancient',
-          category: 'Philosophy',
-          year_written: 170,
-          language: 'Greek',
+          era: 'ancient',
+          category: 'philosophy',
+          publication_year: 170,
+          original_language: 'Greek',
           description: 'Stoic reflections',
           source_url: 'https://example.com/meditations',
           citation_count: 30,
+          word_count: 50000,
+          reading_difficulty: 'intermediate',
+          is_published: true,
+          processing_status: 'ready',
+          section_count: 5,
+          created_at: '2024-01-01T00:00:00Z',
         },
       ],
     }
@@ -201,10 +213,10 @@ describe('texts API client', () => {
         json: async () => mockResponse,
       })
 
-      await fetchTexts({ category: 'Philosophy', era: undefined })
+      await fetchTexts({ category: 'philosophy', era: undefined })
 
       const url = mockFetch.mock.calls[0][0] as string
-      expect(url).toContain('category=Philosophy')
+      expect(url).toContain('category=philosophy')
       expect(url).not.toContain('era=')
     })
   })
@@ -215,14 +227,20 @@ describe('texts API client', () => {
       slug: 'republic',
       title: 'The Republic',
       author: 'Plato',
-      era: 'Ancient',
-      category: 'Philosophy',
-      year_written: -380,
-      language: 'Greek',
+      era: 'ancient',
+      category: 'philosophy',
+      publication_year: -380,
+      original_language: 'Greek',
       description: 'Dialogue on justice',
       source_url: 'https://example.com/republic',
       citation_count: 50,
       sections: [],
+      word_count: 100000,
+      reading_difficulty: 'advanced',
+      is_published: true,
+      processing_status: 'ready',
+      section_count: 10,
+      created_at: '2024-01-01T00:00:00Z',
     }
 
     it('fetches text by slug', async () => {
@@ -268,19 +286,23 @@ describe('texts API client', () => {
     const mockSections: TextSection[] = [
       {
         id: 1,
-        text_id: 1,
-        section_number: '1',
+        section_type: 'book',
+        order_index: 1,
         title: 'Book I',
         content: 'Opening dialogue',
-        order: 1,
+        word_count: 1000,
+        breadcrumb: 'Republic / Book I',
+        created_at: '2024-01-01T00:00:00Z',
       },
       {
         id: 2,
-        text_id: 1,
-        section_number: '2',
+        section_type: 'book',
+        order_index: 2,
         title: 'Book II',
         content: 'Continuation',
-        order: 2,
+        word_count: 1200,
+        breadcrumb: 'Republic / Book II',
+        created_at: '2024-01-01T00:00:00Z',
       },
     ]
 
@@ -314,12 +336,17 @@ describe('texts API client', () => {
     const mockCitations: TextCitation[] = [
       {
         id: 1,
-        text_id: 1,
-        section_id: 1,
-        citation_key: 'REP_1_1',
-        text_snippet: 'What is justice?',
-        start_char: 0,
-        end_char: 15,
+        debate_message: 123,
+        text: 1,
+        text_title: 'The Republic',
+        text_author: 'Plato',
+        text_section: 1,
+        section_breadcrumb: 'Republic / Book I',
+        citation_text: 'What is justice?',
+        match_confidence: 0.95,
+        match_method: 'llm',
+        verified: true,
+        created_at: '2024-01-01T00:00:00Z',
       },
     ]
 
@@ -352,17 +379,16 @@ describe('texts API client', () => {
   describe('fetchTextsStats', () => {
     const mockStats: TextsStats = {
       total_texts: 100,
-      total_sections: 500,
-      total_citations: 2000,
-      texts_by_category: {
-        Philosophy: 40,
-        Theology: 30,
-        Science: 30,
+      total_words: 1000000,
+      by_category: {
+        philosophy: 40,
+        theology: 30,
+        science: 30,
       },
-      texts_by_era: {
-        Ancient: 25,
-        Medieval: 20,
-        Modern: 55,
+      by_era: {
+        ancient: 25,
+        medieval: 20,
+        modern: 55,
       },
     }
 
@@ -395,11 +421,13 @@ describe('texts API client', () => {
   describe('fetchSection', () => {
     const mockSection: TextSection = {
       id: 123,
-      text_id: 1,
-      section_number: '1.1',
+      section_type: 'chapter',
+      order_index: 1,
       title: 'Introduction',
       content: 'Opening remarks',
-      order: 1,
+      word_count: 500,
+      breadcrumb: 'Text / Introduction',
+      created_at: '2024-01-01T00:00:00Z',
     }
 
     it('fetches section by ID', async () => {

@@ -26,7 +26,7 @@ const mockAxiosInstance = {
       }),
     },
   },
-  _responseInterceptor: { onFulfilled: null as any, onRejected: null as any },
+  _responseInterceptor: { onFulfilled: null as unknown, onRejected: null as unknown },
 }
 
 // Mock axios module before importing api
@@ -68,7 +68,7 @@ Object.defineProperty(window, 'location', {
 })
 
 // Now import the api module (after mocks are set up)
-let apiClient: any
+let apiClient: typeof import('@/lib/api').apiClient
 
 describe('API Client', () => {
   beforeEach(async () => {
@@ -105,7 +105,7 @@ describe('API Client', () => {
     })
 
     it('refreshes token on 401 error', async () => {
-      const mockError: any = {
+      const mockError: { response?: { status: number; data?: { error?: string } }; message: string } = {
         response: { status: 401 },
         config: {
           headers: {},
@@ -121,7 +121,7 @@ describe('API Client', () => {
 
       try {
         await mockAxiosInstance._responseInterceptor.onRejected(mockError)
-      } catch (error) {
+      } catch {
         // May reject in test environment
       }
 
@@ -130,7 +130,7 @@ describe('API Client', () => {
     })
 
     it('redirects to login when refresh fails', async () => {
-      const mockError: any = {
+      const mockError: { response?: { status: number; data?: { error?: string } }; message: string } = {
         response: { status: 401 },
         config: { headers: {} },
       }
@@ -140,7 +140,7 @@ describe('API Client', () => {
 
       try {
         await mockAxiosInstance._responseInterceptor.onRejected(mockError)
-      } catch (error) {
+      } catch {
         // Expected to reject
       }
 
@@ -148,7 +148,7 @@ describe('API Client', () => {
     })
 
     it('passes through non-401 errors', async () => {
-      const mockError: any = {
+      const mockError: { response?: { status: number; data?: { error?: string } }; message: string } = {
         response: { status: 500 },
         config: {},
       }
@@ -711,8 +711,8 @@ describe('API Client', () => {
       await import('@/lib/api')
 
       // Check that axios.create was called with withCredentials: true
-      const createCalls = (axios.default.create as any).mock?.calls || []
-      const callWithCredentials = createCalls.find((call: any) =>
+      const createCalls = (axios.default.create as { mock?: { calls: unknown[][] } }).mock?.calls || []
+      const callWithCredentials = createCalls.find((call: unknown[]) =>
         call[0]?.withCredentials === true
       )
 

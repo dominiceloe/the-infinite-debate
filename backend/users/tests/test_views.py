@@ -45,7 +45,7 @@ class TestUserRegistration:
         assert user.email == 'newuser@example.com'
         assert user.subscription_tier == 'trial'
         assert user.subscription_status == 'active'
-        assert user.credits_remaining == 15  # Trial credits
+        assert user.credits_remaining == 10  # Beta: Changed from 15 to 10
         assert user.trial_start_date is not None
         assert user.trial_end_date is not None
 
@@ -587,7 +587,7 @@ class TestSubscriptionStatus:
         assert response.data['tier'] == 'trial'
         assert response.data['status'] == 'active'
         assert response.data['is_trial'] is True
-        assert response.data['credits_remaining'] == 15
+        assert response.data['credits_remaining'] == 10  # Beta: Changed from 15 to 10
         assert 'trial_end_date' in response.data
         assert 'days_until_trial_end' in response.data
         assert response.data['can_create_debates'] is True
@@ -801,7 +801,7 @@ class TestTrialManagement:
 
         assert user.subscription_tier == 'trial'
         assert user.subscription_status == 'active'
-        assert user.credits_remaining == 15
+        assert user.credits_remaining == 10  # Beta: Changed from 15 to 10
         assert user.trial_start_date is not None
         assert user.trial_end_date is not None
         assert user.trial_end_date > user.trial_start_date

@@ -43,6 +43,17 @@ def celery_config():
     }
 
 
+@pytest.fixture(autouse=True)
+def mock_anthropic_api_key(monkeypatch):
+    """
+    Set a dummy ANTHROPIC_API_KEY for all tests.
+    This prevents DebateGenerator.__init__ from failing when the
+    environment variable is not set (e.g., in CI for forked PRs).
+    The actual Anthropic client is mocked in integration tests.
+    """
+    monkeypatch.setenv('ANTHROPIC_API_KEY', 'test-api-key-dummy')
+
+
 @pytest.fixture
 def api_client():
     """

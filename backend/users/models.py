@@ -39,13 +39,19 @@ class User(AbstractUser):
 
     # Credits
     credits_remaining = models.IntegerField(
-        default=15,
-        help_text="Credits available this billing period (15 for trial)"
+        default=10,  # Beta: Changed from 15 to 10 for trial users
+        help_text="Credits available this billing period (10 for trial, 30 for starter)"
     )
     credits_reset_date = models.DateField(
         null=True,
         blank=True,
         help_text="Date when credits will reset (monthly)"
+    )
+
+    # Beta Simplification: Rate limiting for trial users
+    daily_debate_limit = models.IntegerField(
+        default=2,
+        help_text="Maximum debates per day (2 for trial, 999 for paid tiers = unlimited)"
     )
 
     # Trial
@@ -105,10 +111,12 @@ class User(AbstractUser):
     def start_trial(self):
         """
         Initialize a new trial subscription.
+        Beta: 10 credits (down from 15) + 2 debates/day rate limit.
         """
         self.subscription_tier = 'trial'
         self.subscription_status = 'active'
-        self.credits_remaining = 15
+        self.credits_remaining = 10  # Beta: Changed from 15 to 10
+        self.daily_debate_limit = 2  # Beta: Rate limit for trials
         self.trial_start_date = timezone.now()
         self.trial_end_date = timezone.now() + timedelta(days=7)
         self.credits_reset_date = None  # Trial doesn't have monthly reset
@@ -207,3 +215,36 @@ class User(AbstractUser):
     def is_paid_subscriber(self):
         """Return True if user has a paid subscription."""
         return self.subscription_tier in ['starter', 'pro', 'enterprise'] and self.subscription_status == 'active'
+
+    def get_debates_created_today(self) -> int:
+        """
+        Count debates created by this user today.
+        Beta: Used for rate limiting (2/day for trial users).
+
+        Returns:
+            Number of debates created since midnight today (UTC)
+        """
+        from debates.models import Debate
+        from django.utils import timezone
+
+        today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        return Debate.objects.filter(
+            user=self,
+            created_at__gte=today_start
+        ).count()
+
+    def can_create_debate_today(self) -> bool:
+        """
+        Check if user can create another debate today based on daily limit.
+        Beta: Trial users limited to 2/day, paid users unlimited (999 = no real limit).
+
+        Returns:
+            True if user hasn't exceeded daily limit
+        """
+        # Paid users effectively have no limit (999 debates/day)
+        if self.is_paid_subscriber:
+            return True
+
+        # Check daily limit for trial users
+        debates_today = self.get_debates_created_today()
+        return debates_today < self.daily_debate_limit

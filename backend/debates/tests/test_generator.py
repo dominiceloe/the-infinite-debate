@@ -60,6 +60,7 @@ def mock_anthropic_client():
         mock_content = MagicMock()
         mock_content.text = "This is a generated response from Claude."
         mock_response.content = [mock_content]
+        mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
 
         # Set up messages.create to return the mock response
         mock_client.messages.create.return_value = mock_response
@@ -398,18 +399,20 @@ class TestDebateGeneratorResponseGeneration:
             mock_content = MagicMock()
             mock_content.text = "This is the extracted text from Claude"
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
             generator = DebateGenerator(api_key='test-key')
-            result = generator._generate_response(
+            content, tokens_used = generator._generate_response(
                 debate=sample_debate,
                 persona=test_personas['socrates'],
                 round_number=1,
                 previous_messages=[]
             )
 
-            assert result == "This is the extracted text from Claude"
+            assert content == "This is the extracted text from Claude"
+            assert tokens_used == 150  # 100 input + 50 output
 
 
 class TestDebateGeneratorTranscriptBuilding:
@@ -625,6 +628,7 @@ class TestAPIErrorHandling:
             # Create response with missing content
             mock_response = MagicMock()
             mock_response.content = []
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
@@ -646,6 +650,7 @@ class TestAPIErrorHandling:
             mock_content = MagicMock()
             mock_content.text = ""  # Empty string instead of None
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=0)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
@@ -1032,6 +1037,7 @@ class TestRoundGenerationEdgeCases:
             mock_content = MagicMock()
             mock_content.text = "Test response"
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
@@ -1057,6 +1063,7 @@ class TestPromptIntegration:
             mock_content = MagicMock()
             mock_content.text = "Opening statement"
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
@@ -1094,6 +1101,7 @@ class TestPromptIntegration:
             mock_content = MagicMock()
             mock_content.text = "Response"
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
@@ -1125,12 +1133,13 @@ class TestAPIResponseParsing:
             mock_content2 = MagicMock()
             mock_content2.text = "Second block"
             mock_response.content = [mock_content1, mock_content2]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
 
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
             generator = DebateGenerator(api_key='test-key')
-            result = generator._generate_response(
+            content, tokens_used = generator._generate_response(
                 debate=sample_debate,
                 persona=test_personas['socrates'],
                 round_number=1,
@@ -1138,7 +1147,8 @@ class TestAPIResponseParsing:
             )
 
             # Should use first content block
-            assert result == "First block"
+            assert content == "First block"
+            assert tokens_used == 150
 
     def test_response_with_very_long_text(self, sample_debate, test_personas):
         """Test handling of very long API responses"""
@@ -1150,11 +1160,12 @@ class TestAPIResponseParsing:
             mock_content = MagicMock()
             mock_content.text = long_text
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
             generator = DebateGenerator(api_key='test-key')
-            result = generator._generate_response(
+            content, tokens_used = generator._generate_response(
                 debate=sample_debate,
                 persona=test_personas['socrates'],
                 round_number=1,
@@ -1162,8 +1173,9 @@ class TestAPIResponseParsing:
             )
 
             # Should handle long text without truncation
-            assert result == long_text
-            assert len(result) == 5000
+            assert content == long_text
+            assert len(content) == 5000
+            assert tokens_used == 150
 
     def test_response_with_special_characters(self, sample_debate, test_personas):
         """Test handling of responses with special characters and unicode"""
@@ -1175,11 +1187,12 @@ class TestAPIResponseParsing:
             mock_content = MagicMock()
             mock_content.text = special_text
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
             generator = DebateGenerator(api_key='test-key')
-            result = generator._generate_response(
+            content, tokens_used = generator._generate_response(
                 debate=sample_debate,
                 persona=test_personas['socrates'],
                 round_number=1,
@@ -1187,7 +1200,8 @@ class TestAPIResponseParsing:
             )
 
             # Should preserve special characters
-            assert result == special_text
+            assert content == special_text
+            assert tokens_used == 150
 
 
 class TestTranscriptFormatting:
@@ -1240,6 +1254,7 @@ class TestTranscriptFormatting:
                 mock_content = MagicMock()
                 mock_content.text = f"Unique message {call_count[0]}"
                 mock_response.content = [mock_content]
+                mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
                 return mock_response
 
             mock_anthropic_client.messages.create.side_effect = create_unique_response
@@ -1396,6 +1411,7 @@ class TestDatabaseOptimization:
             mock_content = MagicMock()
             mock_content.text = "Response"
             mock_response.content = [mock_content]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 

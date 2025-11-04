@@ -19,7 +19,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     """
     Serializer for user registration.
     Creates a new user and automatically starts trial subscription.
-    Requires credit card (payment_method_id) to prevent trial abuse.
+
+    Beta Simplification: payment_method_id is now OPTIONAL.
+    - Users can register without credit card (10 credits, 2 debates/day)
+    - Credit card collection deferred until upgrade to paid tier
     """
     password = serializers.CharField(
         write_only=True,
@@ -35,8 +38,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     payment_method_id = serializers.CharField(
         write_only=True,
-        required=True,
-        help_text="Stripe payment method ID (from Stripe Elements)"
+        required=False,  # Beta: Changed from True to False
+        allow_blank=True,
+        help_text="Stripe payment method ID (optional for beta, required for paid tiers)"
     )
 
     class Meta:
@@ -67,12 +71,16 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Create new user with trial subscription and Stripe payment method.
-        Requires credit card to prevent trial abuse (no charge until trial ends).
+        Create new user with trial subscription.
+
+        Beta Simplification: Stripe payment method is OPTIONAL during registration.
+        - If payment_method_id provided: Create Stripe customer and attach card
+        - If no payment_method_id: Skip Stripe setup (no credit card required)
+        - Rate limiting (2 debates/day) replaces credit card as anti-abuse measure
         """
         # Remove non-user fields from data
         validated_data.pop('password_confirm')
-        payment_method_id = validated_data.pop('payment_method_id')
+        payment_method_id = validated_data.pop('payment_method_id', None)
 
         # Create user
         user = User.objects.create_user(
@@ -86,48 +94,50 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Generate email verification token
         user.email_verification_token = secrets.token_urlsafe(32)
 
-        # Create Stripe customer
-        try:
-            stripe_customer = stripe.Customer.create(
-                email=user.email,
-                name=f"{user.first_name} {user.last_name}".strip() or user.username,
-                metadata={
-                    'user_id': user.id,
-                    'username': user.username,
-                }
-            )
-            user.stripe_customer_id = stripe_customer.id
+        # Beta: Only create Stripe customer if payment method provided
+        # This allows frictionless registration without credit card
+        if payment_method_id:
+            try:
+                stripe_customer = stripe.Customer.create(
+                    email=user.email,
+                    name=f"{user.first_name} {user.last_name}".strip() or user.username,
+                    metadata={
+                        'user_id': user.id,
+                        'username': user.username,
+                    }
+                )
+                user.stripe_customer_id = stripe_customer.id
 
-            # Attach payment method to customer (no charge yet)
-            stripe.PaymentMethod.attach(
-                payment_method_id,
-                customer=stripe_customer.id,
-            )
+                # Attach payment method to customer (no charge yet)
+                stripe.PaymentMethod.attach(
+                    payment_method_id,
+                    customer=stripe_customer.id,
+                )
 
-            # Set as default payment method
-            stripe.Customer.modify(
-                stripe_customer.id,
-                invoice_settings={
-                    'default_payment_method': payment_method_id
-                }
-            )
+                # Set as default payment method
+                stripe.Customer.modify(
+                    stripe_customer.id,
+                    invoice_settings={
+                        'default_payment_method': payment_method_id
+                    }
+                )
 
-            user.stripe_payment_method_id = payment_method_id
+                user.stripe_payment_method_id = payment_method_id
 
-        except CardError as e:
-            # Card was declined
-            user.delete()  # Clean up user if card fails
-            raise serializers.ValidationError({
-                'payment_method_id': f"Card verification failed: {e.user_message}"
-            })
-        except StripeError as e:
-            # Other Stripe error
-            user.delete()  # Clean up user if Stripe fails
-            raise serializers.ValidationError({
-                'payment_method_id': f"Payment processing error: {str(e)}"
-            })
+            except CardError as e:
+                # Card was declined
+                user.delete()  # Clean up user if card fails
+                raise serializers.ValidationError({
+                    'payment_method_id': f"Card verification failed: {e.user_message}"
+                })
+            except StripeError as e:
+                # Other Stripe error
+                user.delete()  # Clean up user if Stripe fails
+                raise serializers.ValidationError({
+                    'payment_method_id': f"Payment processing error: {str(e)}"
+                })
 
-        # Start trial subscription
+        # Start trial subscription (10 credits, 2 debates/day)
         user.start_trial()
 
         return user
@@ -150,12 +160,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for user profile information.
     Returns subscription status, credits, and account details.
+
+    Beta: Includes daily_debate_limit and debates_created_today for rate limiting.
     """
     is_trial_expired = serializers.BooleanField(read_only=True)
     is_on_trial = serializers.BooleanField(read_only=True)
     is_paid_subscriber = serializers.BooleanField(read_only=True)
     days_until_trial_end = serializers.SerializerMethodField()
     days_until_credit_reset = serializers.SerializerMethodField()
+    debates_created_today = serializers.SerializerMethodField()  # Beta: Rate limit tracking
 
     class Meta:
         model = User
@@ -170,6 +183,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'subscription_status',
             'credits_remaining',
             'credits_reset_date',
+            'daily_debate_limit',  # Beta: Added for rate limiting
+            'debates_created_today',  # Beta: Shows how many debates user created today
             'trial_start_date',
             'trial_end_date',
             'is_trial_expired',
@@ -186,6 +201,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'subscription_status',
             'credits_remaining',
             'credits_reset_date',
+            'daily_debate_limit',
             'trial_start_date',
             'trial_end_date',
             'created_at',
@@ -211,6 +227,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         remaining = obj.credits_reset_date - timezone.now().date()
 
         return remaining.days if remaining.days >= 0 else 0
+
+    def get_debates_created_today(self, obj):
+        """
+        Calculate number of debates created today.
+        Beta: Used for rate limiting (2/day for trial users).
+        """
+        return obj.get_debates_created_today()
 
 
 class EmailVerificationSerializer(serializers.Serializer):
