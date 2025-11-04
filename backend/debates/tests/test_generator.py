@@ -60,6 +60,7 @@ def mock_anthropic_client():
         mock_content = MagicMock()
         mock_content.text = "This is a generated response from Claude."
         mock_response.content = [mock_content]
+        mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
 
         # Set up messages.create to return the mock response
         mock_client.messages.create.return_value = mock_response
@@ -625,6 +626,7 @@ class TestAPIErrorHandling:
             # Create response with missing content
             mock_response = MagicMock()
             mock_response.content = []
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
 
@@ -1125,6 +1127,7 @@ class TestAPIResponseParsing:
             mock_content2 = MagicMock()
             mock_content2.text = "Second block"
             mock_response.content = [mock_content1, mock_content2]
+            mock_response.usage = MagicMock(input_tokens=100, output_tokens=50)
 
             mock_client.messages.create.return_value = mock_response
             mock_anthropic.return_value = mock_client
