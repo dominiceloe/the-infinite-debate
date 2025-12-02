@@ -3,6 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   AppBar,
   Toolbar,
@@ -22,6 +23,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
@@ -44,8 +50,10 @@ interface HeaderProps {
 
 export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps = {}) {
   const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [upgradeModalOpen, setUpgradeModalOpen] = React.useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -67,6 +75,29 @@ export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps =
     handleMenuClose();
     handleMobileMenuClose();
     await logout();
+  };
+
+  // Check if daily limit is reached (trial users only)
+  const dailyLimitReached = user?.subscription_tier === 'trial' &&
+    user?.debates_created_today !== undefined &&
+    user?.daily_debate_limit !== undefined &&
+    user.debates_created_today >= user.daily_debate_limit;
+
+  const handleCreateDebate = () => {
+    if (dailyLimitReached || (user?.credits_remaining !== undefined && user.credits_remaining <= 0)) {
+      setUpgradeModalOpen(true);
+    } else {
+      router.push('/debates/new');
+    }
+  };
+
+  const handleCreateDebateMobile = () => {
+    handleMobileMenuClose();
+    if (dailyLimitReached || (user?.credits_remaining !== undefined && user.credits_remaining <= 0)) {
+      setUpgradeModalOpen(true);
+    } else {
+      router.push('/debates/new');
+    }
   };
 
   return (
@@ -140,8 +171,7 @@ export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps =
                 {isAuthenticated ? (
                   <>
                     <Button
-                      component={Link}
-                      href="/debates/new"
+                      onClick={handleCreateDebate}
                       variant="contained"
                       sx={{ px: 3, py: 1.5, fontSize: '1rem' }}
                     >
@@ -312,9 +342,7 @@ export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps =
           {isAuthenticated ? (
             <>
               <ListItem
-                component={Link}
-                href="/debates/new"
-                onClick={handleMobileMenuClose}
+                onClick={handleCreateDebateMobile}
                 sx={{ cursor: 'pointer' }}
               >
                 <ListItemIcon>
@@ -448,6 +476,58 @@ export default function Header({ backTo, backLabel, breadcrumbs }: HeaderProps =
         </Breadcrumbs>
       </Container>
     )}
+
+    {/* Upgrade Modal - shown when user has 0 credits or daily limit reached */}
+    <Dialog
+      open={upgradeModalOpen}
+      onClose={() => setUpgradeModalOpen(false)}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle sx={{ fontWeight: 600 }}>
+        {dailyLimitReached ? 'Daily limit reached' : 'You\'re out of credits'}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {dailyLimitReached ? (
+            <>
+              You&apos;ve reached your daily debate limit ({user?.debates_created_today}/{user?.daily_debate_limit}).
+              Trial users can create {user?.daily_debate_limit} debates per day. Your limit resets at midnight UTC,
+              or upgrade to <strong>Starter</strong> for unlimited debates.
+            </>
+          ) : user?.subscription_tier === 'trial' ? (
+            <>
+              Your free trial credits have been used. Upgrade to <strong>Starter</strong> for
+              30 credits per month and unlimited debates per day.
+            </>
+          ) : user?.subscription_tier === 'starter' ? (
+            <>
+              You&apos;ve used all your credits for this month. Your credits will reset on{' '}
+              <strong>{user?.credits_reset_date || 'the 1st of next month'}</strong>, or you can
+              upgrade to <strong>Pro</strong> for more credits.
+            </>
+          ) : (
+            <>
+              You&apos;ve used all your credits. Please wait for your monthly reset or contact
+              support for additional credits.
+            </>
+          )}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={() => setUpgradeModalOpen(false)} color="inherit">
+          Cancel
+        </Button>
+        <Button
+          component={Link}
+          href="/pricing"
+          variant="contained"
+          onClick={() => setUpgradeModalOpen(false)}
+        >
+          View Plans
+        </Button>
+      </DialogActions>
+    </Dialog>
     </>
   );
 }

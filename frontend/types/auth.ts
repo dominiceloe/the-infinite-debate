@@ -18,6 +18,8 @@ export interface User {
   is_paid_subscriber: boolean;
   days_until_trial_end: number | null;
   days_until_credit_reset: number | null;
+  daily_debate_limit: number;
+  debates_created_today: number;
   created_at: string;
 }
 
