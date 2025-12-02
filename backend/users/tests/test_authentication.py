@@ -623,8 +623,8 @@ class TestSubscriptionStatusView:
         assert response.data['is_trial'] is False
         assert 'days_until_credit_reset' in response.data
 
-    def test_subscription_status_expired_trial(self, api_client, expired_trial_user):
-        """Test subscription status for expired trial user."""
+    def test_subscription_status_expired_trial_with_credits(self, api_client, expired_trial_user):
+        """Test subscription status for expired trial user with credits - can still create debates."""
         api_client.force_authenticate(user=expired_trial_user)
 
         response = api_client.get('/api/auth/subscription-status/')
@@ -632,7 +632,8 @@ class TestSubscriptionStatusView:
         assert response.status_code == status.HTTP_200_OK
         assert response.data['tier'] == 'trial'
         assert response.data['is_trial_expired'] is True
-        assert response.data['can_create_debates'] is False
+        # Expired trial users WITH credits can still create debates
+        assert response.data['can_create_debates'] is True
 
     def test_subscription_status_unauthenticated(self, api_client):
         """Test subscription status requires authentication."""
@@ -835,8 +836,22 @@ class TestCreditBalanceAndTiers:
         assert 'credits_reset_date' in response.data
         assert response.data['credits_remaining'] == 100
 
-    def test_expired_trial_cannot_create_debates(self, api_client, expired_trial_user):
-        """Test expired trial user cannot create debates."""
+    def test_expired_trial_with_credits_can_create_debates(self, api_client, expired_trial_user):
+        """Test expired trial user with credits CAN create debates."""
+        api_client.force_authenticate(user=expired_trial_user)
+        response = api_client.get('/api/auth/subscription-status/')
+
+        assert response.status_code == status.HTTP_200_OK
+        # Expired trial users WITH credits can still create debates
+        assert response.data['can_create_debates'] is True
+        assert response.data['is_trial_expired'] is True
+
+    def test_expired_trial_without_credits_cannot_create_debates(self, api_client, expired_trial_user):
+        """Test expired trial user without credits cannot create debates."""
+        # Set credits to 0
+        expired_trial_user.credits_remaining = 0
+        expired_trial_user.save()
+
         api_client.force_authenticate(user=expired_trial_user)
         response = api_client.get('/api/auth/subscription-status/')
 

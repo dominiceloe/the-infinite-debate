@@ -592,8 +592,8 @@ class TestSubscriptionStatus:
         assert 'days_until_trial_end' in response.data
         assert response.data['can_create_debates'] is True
 
-    def test_subscription_status_expired_trial(self, api_client):
-        """Test subscription status for expired trial"""
+    def test_subscription_status_expired_trial_without_credits(self, api_client):
+        """Test subscription status for expired trial without credits - cannot create debates"""
         user = User.objects.create_user(
             username='expireduser',
             email='expired@example.com',
@@ -602,6 +602,7 @@ class TestSubscriptionStatus:
         user.subscription_tier = 'trial'
         user.trial_start_date = timezone.now() - timedelta(days=10)
         user.trial_end_date = timezone.now() - timedelta(days=3)
+        user.credits_remaining = 0  # No credits left
         user.save()
         api_client.force_authenticate(user=user)
 
@@ -610,6 +611,27 @@ class TestSubscriptionStatus:
         assert response.status_code == status.HTTP_200_OK
         assert response.data['is_trial_expired'] is True
         assert response.data['can_create_debates'] is False
+
+    def test_subscription_status_expired_trial_with_credits(self, api_client):
+        """Test subscription status for expired trial with credits - CAN create debates"""
+        user = User.objects.create_user(
+            username='expireduser2',
+            email='expired2@example.com',
+            password='password123'
+        )
+        user.subscription_tier = 'trial'
+        user.trial_start_date = timezone.now() - timedelta(days=10)
+        user.trial_end_date = timezone.now() - timedelta(days=3)
+        user.credits_remaining = 5  # Has credits
+        user.save()
+        api_client.force_authenticate(user=user)
+
+        response = api_client.get('/api/auth/subscription-status/')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['is_trial_expired'] is True
+        # Expired trial users WITH credits can still create debates
+        assert response.data['can_create_debates'] is True
 
     def test_subscription_status_paid_subscriber(self, api_client):
         """Test subscription status for paid subscriber"""
