@@ -135,10 +135,11 @@ class User(AbstractUser):
     def can_create_debate(self, required_credits):
         """
         Check if user has enough credits and active subscription.
+
+        Note: Trial expiration does NOT block debate creation.
+        Users can use remaining credits even after trial expires.
         """
         if self.subscription_status != 'active':
-            return False
-        if self.is_trial_expired():
             return False
         return self.credits_remaining >= required_credits
 

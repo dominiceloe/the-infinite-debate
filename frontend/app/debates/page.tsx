@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import type { Debate, PaginatedResponse } from '@/types';
 import {
   Container,
@@ -22,6 +24,11 @@ import {
   FormControl,
   InputLabel,
   InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '@/components/Header';
@@ -31,6 +38,8 @@ type StatusFilter = 'all' | 'pending' | 'generating' | 'completed' | 'failed';
 type SizeFilter = 'all' | 'small' | 'medium' | 'large' | 'xl';
 
 export default function DebatesListPage() {
+  const { user } = useAuth();
+  const router = useRouter();
   const { data, isLoading, error } = useQuery<PaginatedResponse<Debate>>({
     queryKey: ['debates'],
     queryFn: () => apiClient.debates.list(),
@@ -41,6 +50,21 @@ export default function DebatesListPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+
+  // Check if daily limit is reached (trial users only)
+  const dailyLimitReached = user?.subscription_tier === 'trial' &&
+    user?.debates_created_today !== undefined &&
+    user?.daily_debate_limit !== undefined &&
+    user.debates_created_today >= user.daily_debate_limit;
+
+  const handleCreateDebate = () => {
+    if (dailyLimitReached || (user?.credits_remaining !== undefined && user.credits_remaining <= 0)) {
+      setUpgradeModalOpen(true);
+    } else {
+      router.push('/debates/new');
+    }
+  };
 
   // Filter and sort debates
   const filteredDebates = useMemo(() => {
@@ -242,8 +266,7 @@ export default function DebatesListPage() {
                 No debates yet. Create your first one!
               </Typography>
               <Button
-                component={Link}
-                href="/debates/new"
+                onClick={handleCreateDebate}
                 variant="contained"
                 sx={{ px: 4, py: 2, fontWeight: 500 }}
               >
@@ -318,6 +341,58 @@ export default function DebatesListPage() {
           )}
         </Box>
       </Container>
+
+      {/* Upgrade Modal - shown when user has 0 credits or daily limit reached */}
+      <Dialog
+        open={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>
+          {dailyLimitReached ? 'Daily limit reached' : 'You\'re out of credits'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {dailyLimitReached ? (
+              <>
+                You&apos;ve reached your daily debate limit ({user?.debates_created_today}/{user?.daily_debate_limit}).
+                Trial users can create {user?.daily_debate_limit} debates per day. Your limit resets at midnight UTC,
+                or upgrade to <strong>Starter</strong> for unlimited debates.
+              </>
+            ) : user?.subscription_tier === 'trial' ? (
+              <>
+                Your free trial credits have been used. Upgrade to <strong>Starter</strong> for
+                30 credits per month and unlimited debates per day.
+              </>
+            ) : user?.subscription_tier === 'starter' ? (
+              <>
+                You&apos;ve used all your credits for this month. Your credits will reset on{' '}
+                <strong>{user?.credits_reset_date || 'the 1st of next month'}</strong>, or you can
+                upgrade to <strong>Pro</strong> for more credits.
+              </>
+            ) : (
+              <>
+                You&apos;ve used all your credits. Please wait for your monthly reset or contact
+                support for additional credits.
+              </>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setUpgradeModalOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            component={Link}
+            href="/pricing"
+            variant="contained"
+            onClick={() => setUpgradeModalOpen(false)}
+          >
+            View Plans
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

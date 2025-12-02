@@ -127,6 +127,7 @@ class DebateGenerator:
                     # Publish message event for real-time updates
                     self._publish_event(debate.slug, 'message', {
                         'message_id': message.id,
+                        'persona_id': persona.id,
                         'persona_name': persona.name,
                         'persona_slug': persona.slug,
                         'round_number': round_num,
