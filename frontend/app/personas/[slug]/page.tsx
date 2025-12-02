@@ -22,6 +22,11 @@ import {
   CardContent,
   CircularProgress,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import Header from '@/components/Header';
 
@@ -32,6 +37,21 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
   const { user } = useAuth();
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+
+  // Check if daily limit is reached (trial users only)
+  const dailyLimitReached = user?.subscription_tier === 'trial' &&
+    user?.debates_created_today !== undefined &&
+    user?.daily_debate_limit !== undefined &&
+    user.debates_created_today >= user.daily_debate_limit;
+
+  const handleCreateDebate = () => {
+    if (dailyLimitReached || (user?.credits_remaining !== undefined && user.credits_remaining <= 0)) {
+      setUpgradeModalOpen(true);
+    } else {
+      router.push('/debates/new');
+    }
+  };
 
   const { data: persona, isLoading, error } = useQuery<Persona>({
     queryKey: ['persona', slug],
@@ -532,8 +552,7 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
                 Want to see {persona.name} in a debate?
               </Typography>
               <Button
-                component={Link}
-                href="/debates/new"
+                onClick={handleCreateDebate}
                 variant="contained"
                 sx={{
                   bgcolor: 'white',
@@ -600,6 +619,58 @@ export default function PersonaDetailPage({ params }: { params: Promise<{ slug: 
           )}
         </Box>
       </Container>
+
+      {/* Upgrade Modal - shown when user has 0 credits or daily limit reached */}
+      <Dialog
+        open={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>
+          {dailyLimitReached ? 'Daily limit reached' : 'You\'re out of credits'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {dailyLimitReached ? (
+              <>
+                You&apos;ve reached your daily debate limit ({user?.debates_created_today}/{user?.daily_debate_limit}).
+                Trial users can create {user?.daily_debate_limit} debates per day. Your limit resets at midnight UTC,
+                or upgrade to <strong>Starter</strong> for unlimited debates.
+              </>
+            ) : user?.subscription_tier === 'trial' ? (
+              <>
+                Your free trial credits have been used. Upgrade to <strong>Starter</strong> for
+                30 credits per month and unlimited debates per day.
+              </>
+            ) : user?.subscription_tier === 'starter' ? (
+              <>
+                You&apos;ve used all your credits for this month. Your credits will reset on{' '}
+                <strong>{user?.credits_reset_date || 'the 1st of next month'}</strong>, or you can
+                upgrade to <strong>Pro</strong> for more credits.
+              </>
+            ) : (
+              <>
+                You&apos;ve used all your credits. Please wait for your monthly reset or contact
+                support for additional credits.
+              </>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setUpgradeModalOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            component={Link}
+            href="/pricing"
+            variant="contained"
+            onClick={() => setUpgradeModalOpen(false)}
+          >
+            View Plans
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

@@ -686,10 +686,16 @@ class TestDebateCreateSerializer:
 
             assert 'Subscription is inactive' in str(exc_info.value)
 
-    def test_trial_expired_validation(self, test_user, test_personas, api_request_factory):
-        """Test validation fails when trial has expired"""
+    def test_trial_expired_with_credits_can_create(self, test_user, test_personas, api_request_factory):
+        """Test that expired trial users can still create debates if they have credits.
+
+        Business rule: Trial expiration does NOT block debate creation.
+        Users can use remaining credits even after trial expires.
+        """
         request = api_request_factory.post('/debates/')
         request.user = test_user
+        test_user.credits_remaining = 10  # Has credits
+        test_user.save()
 
         data = {
             'title': 'Test Debate',
@@ -702,11 +708,11 @@ class TestDebateCreateSerializer:
         serializer = DebateCreateSerializer(data=data, context={'request': request})
         assert serializer.is_valid()
 
+        # Trial expired but user has credits - should succeed
         with patch.object(test_user, 'is_trial_expired', return_value=True):
-            with pytest.raises(ValidationError) as exc_info:
-                serializer.save()
-
-            assert 'Trial period has expired' in str(exc_info.value)
+            debate = serializer.save()
+            assert debate is not None
+            assert debate.title == 'Test Debate'
 
     def test_xl_debate_requires_enterprise(
         self, test_user, test_personas, api_request_factory

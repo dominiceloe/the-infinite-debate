@@ -80,9 +80,12 @@ class DebateViewSet(viewsets.ModelViewSet):
     def get_throttles(self):
         """
         Apply custom throttling for debate generation endpoint.
+        Exclude stream endpoint from throttling (SSE connections are long-lived).
         """
         if self.action == 'generate':
             return [DebateGenerationThrottle()]
+        if self.action == 'stream':
+            return []  # SSE connections shouldn't be rate-limited per request
         return super().get_throttles()
 
     def get_queryset(self):

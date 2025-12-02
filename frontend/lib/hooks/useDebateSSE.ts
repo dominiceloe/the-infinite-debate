@@ -11,6 +11,7 @@ interface SSEMessage {
   max_rounds?: number;
   error_message?: string;
   message_id?: number;
+  persona_id?: number;
   persona_name?: string;
   persona_slug?: string;
   round_number?: number;
@@ -104,6 +105,7 @@ export function useDebateSSE({
                 round_number: message.round_number!,
                 content: message.content!,
                 persona: {
+                  id: message.persona_id!,
                   name: message.persona_name!,
                   slug: message.persona_slug!,
                 },

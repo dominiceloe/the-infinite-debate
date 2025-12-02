@@ -121,9 +121,8 @@ def validate_user_credits(user, required_credits):
     if user.subscription_status != 'active':
         return False, f"Subscription is {user.subscription_status}. Please activate your subscription."
 
-    # Check if trial has expired
-    if user.is_trial_expired():
-        return False, "Trial period has expired. Please upgrade to a paid plan."
+    # Note: Trial expiration does NOT block debate creation.
+    # Users can use remaining credits even after trial expires.
 
     # Check if user has enough credits
     if user.credits_remaining < required_credits:

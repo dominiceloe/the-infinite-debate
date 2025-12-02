@@ -7,12 +7,14 @@ import { getDebateLimits } from '@/lib/tiers';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Header from '@/components/Header';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { PersonasByCategory, CreateDebateRequest } from '@/types';
 import {
   Container,
   Box,
   Typography,
+  Button,
   CircularProgress,
   Alert,
   Paper,
@@ -37,6 +39,14 @@ function NewDebatePageContent() {
 
   // Get tier-based limits
   const limits = getDebateLimits(user?.subscription_tier);
+
+  // Check for blocking conditions
+  const noCredits = user?.credits_remaining === 0;
+  const dailyLimitReached = user?.subscription_tier === 'trial' &&
+    user?.debates_created_today !== undefined &&
+    user?.daily_debate_limit !== undefined &&
+    user.debates_created_today >= user.daily_debate_limit;
+  const cannotCreateDebate = noCredits || dailyLimitReached;
 
   // Fetch personas data
   const { data, isLoading } = useQuery<PersonasByCategory>({
@@ -165,22 +175,85 @@ function NewDebatePageContent() {
             Choose participants and a topic to generate a philosophical debate.
           </Typography>
 
-          {/* Credit Balance Display */}
-          <Alert severity="info" sx={{ mb: { xs: 4, md: 5 }, borderRadius: 2 }}>
+          {/* Credit Balance Display - shows error when 0 credits or daily limit reached */}
+          <Alert
+            severity={cannotCreateDebate ? 'error' : 'info'}
+            sx={{ mb: { xs: 4, md: 5 }, borderRadius: 2 }}
+          >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
               <Box>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                  Your Credits: {user?.credits_remaining}
-                </Typography>
-                <Typography variant="caption">
-                  Your tier ({user?.subscription_tier}): Up to {limits.maxParticipants} participants, {limits.maxRounds} rounds max
-                  {user?.subscription_tier === 'trial' && ` • Trial: ${user?.days_until_trial_end} days left`}
-                </Typography>
+                {dailyLimitReached ? (
+                  <>
+                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      Daily debate limit reached ({user?.debates_created_today}/{user?.daily_debate_limit})
+                    </Typography>
+                    <Typography variant="caption">
+                      Trial users can create {user?.daily_debate_limit} debates per day. Your limit resets at midnight UTC, or upgrade to Starter for unlimited debates.
+                    </Typography>
+                  </>
+                ) : noCredits ? (
+                  <>
+                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      You&apos;re out of credits
+                    </Typography>
+                    <Typography variant="caption">
+                      {user?.subscription_tier === 'trial' ? (
+                        <>Your free trial credits have been used. Upgrade to Starter for 30 credits per month.</>
+                      ) : user?.subscription_tier === 'starter' ? (
+                        <>Your credits will reset on {user?.credits_reset_date || 'the 1st of next month'}, or upgrade to Pro for more credits.</>
+                      ) : (
+                        <>Please wait for your monthly reset or contact support for additional credits.</>
+                      )}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      Your Credits: {user?.credits_remaining}
+                      {user?.subscription_tier === 'trial' && ` • Today: ${user?.debates_created_today}/${user?.daily_debate_limit} debates`}
+                    </Typography>
+                    <Typography variant="caption">
+                      Your tier ({user?.subscription_tier}): Up to {limits.maxParticipants} participants, {limits.maxRounds} rounds max
+                      {user?.subscription_tier === 'trial' && ` • Trial: ${user?.days_until_trial_end} days left`}
+                    </Typography>
+                  </>
+                )}
               </Box>
+              {cannotCreateDebate && (
+                <Button
+                  component={Link}
+                  href="/pricing"
+                  variant="contained"
+                  size="small"
+                  sx={{ ml: 'auto' }}
+                >
+                  View Plans
+                </Button>
+              )}
             </Box>
           </Alert>
 
-          {isLoading ? (
+          {cannotCreateDebate ? (
+            <Box sx={{ textAlign: 'center', py: 10 }}>
+              <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                {dailyLimitReached ? 'Daily limit reached' : 'Upgrade to create debates'}
+              </Typography>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                {dailyLimitReached
+                  ? 'Trial users can create 2 debates per day. Upgrade to Starter for unlimited debates.'
+                  : 'You need credits to create new debates. Upgrade your plan to continue.'}
+              </Typography>
+              <Button
+                component={Link}
+                href="/pricing"
+                variant="contained"
+                size="large"
+                sx={{ px: 4 }}
+              >
+                View Plans
+              </Button>
+            </Box>
+          ) : isLoading ? (
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 10 }}>
               <Box sx={{ textAlign: 'center' }}>
                 <CircularProgress size={48} sx={{ mb: 2 }} />
@@ -277,7 +350,14 @@ function NewDebatePageContent() {
                     borderRadius: 2,
                   }}
                 >
-                  Error creating debate: {String(createMutation.error)}
+                  Error creating debate:{' '}
+                  {(() => {
+                    const err = createMutation.error as { response?: { data?: { detail?: string; non_field_errors?: string[] } }; message?: string };
+                    return err?.response?.data?.detail ||
+                      err?.response?.data?.non_field_errors?.[0] ||
+                      err?.message ||
+                      'An unexpected error occurred';
+                  })()}
                 </Alert>
               )}
             </Box>

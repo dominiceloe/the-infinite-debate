@@ -148,8 +148,8 @@ describe('Header', () => {
     // Should show credits
     expect(screen.getByText('500')).toBeInTheDocument()
 
-    // Should show Create Debate link
-    expect(screen.getByRole('link', { name: /Create Debate/i })).toBeInTheDocument()
+    // Should show Create Debate button (changed from link to handle 0-credit modal)
+    expect(screen.getByRole('button', { name: /Create Debate/i })).toBeInTheDocument()
   })
 
   it('renders back button when backTo and backLabel provided', () => {
