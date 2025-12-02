@@ -284,6 +284,10 @@ CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(',')]
 
 CORS_ALLOW_CREDENTIALS = True  # Required for cookies
 
+# CSRF Trusted Origins (required for Django 4.0+ cross-origin POST requests)
+csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:3000,http://localhost:3001')
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins.split(',')]
+
 # Anthropic API Configuration
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
 
