@@ -553,7 +553,7 @@ class SubscriptionStatusView(APIView):
             'is_trial': user.is_on_trial,
             'trial_end_date': user.trial_end_date,
             'is_trial_expired': user.is_trial_expired(),
-            'can_create_debates': user.subscription_status == 'active' and not user.is_trial_expired(),
+            'can_create_debates': user.subscription_status == 'active' and user.credits_remaining > 0,
         }
 
         # Add trial-specific info
