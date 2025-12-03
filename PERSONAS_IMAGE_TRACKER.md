@@ -1,262 +1,283 @@
 # Persona Image Tracker
 
-Track which personas have portraits and which need images generated via ChatGPT.
+**Last Updated:** 2025-12-03
 
-## Current Personas with Images (52 total)
+Track which personas have portraits in the system.
 
-### Philosophers (11)
-- [x] Socrates - `socrates.png`
-- [x] Confucius - `confucius.png`
-- [x] René Descartes - `rene-descartes.png`
-- [x] Søren Kierkegaard - `sren-kierkegaard.png`
-- [x] David Hume - `david-hume.png`
-- [x] Jean-Paul Sartre - `jean-paul-sartre.png`
-- [x] Aristotle - `aristotle.png`
-- [x] Immanuel Kant - `immanuel-kant.png`
-- [x] Simone de Beauvoir - `simone-de-beauvoir.png`
-- [x] Plato - `plato.png`
-- [x] Karl Marx (1818-1883) - `karl-marx.png`
+## Summary
 
-### Scientists (11)
-- [x] Niels Bohr - `niels-bohr.png`
-- [x] James Clerk Maxwell - `james-clerk-maxwell.png`
-- [x] Louis Pasteur - `louis-pasteur.png`
-- [x] Albert Einstein - `albert-einstein.png`
-- [x] Charles Darwin - `charles-darwin.png`
-- [x] Johannes Kepler - `johannes-kepler.png`
-- [x] Nikola Tesla - `nikola-tesla.png`
-- [x] Marie Curie - `marie-curie.png`
-- [x] Galileo Galilei - `galileo-galilei.png`
-- [x] Isaac Newton - `isaac-newton.png`
-- [x] Nicolaus Copernicus (1473-1543) - `nicolaus-copernicus.png`
+| Status | Count |
+|--------|-------|
+| **Complete** | 198 |
+| **Pending** | 1 |
+| **Total Personas** | 199 |
 
-### Theologians (11)
-- [x] Thomas Aquinas - `thomas-aquinas.png`
-- [x] Al-Ghazālī - `al-ghazali.png`
-- [x] Karl Barth - `karl-barth.png`
-- [x] Nāgārjuna - `nagarjuna.png`
-- [x] Laozi - `laozi.png`
-- [x] Martin Luther - `martin-luther.png`
-- [x] Plotinus - `plotinus.png`
-- [x] Moses Maimonides - `moses-maimonides.png`
-- [x] Augustine of Hippo - `augustine-of-hippo.png`
-- [x] Rāmānuja - `ramanujaz.png`
-- [x] Adi Śaṅkara (788-820) - `adi-sankara.png`
-
-### Political Theorists (6)
-- [x] Niccolò Machiavelli (1469-1527) - `niccolo-machiavelli.png`
-- [x] Thomas Hobbes (1588-1679) - `thomas-hobbes.png`
-- [x] John Locke (1632-1704) - `john-locke.png`
-- [x] Edmund Burke (1729-1797) - `edmund-burke.png`
-- [x] Hannah Arendt (1906-1975) - `hannah-arendt.png`
-- [x] Frantz Fanon (1925-1961) - `frantz-fanon.png`
-
-### Psychologists (6)
-- [x] William James (1842-1910) - `william-james.png`
-- [x] Sigmund Freud (1856-1939) - `sigmund-freud.png`
-- [x] Carl Jung (1875-1961) - `carl-jung.png`
-- [x] B.F. Skinner (1904-1990) - `bf-skinner.png`
-- [x] Viktor Frankl (1905-1997) - `viktor-frankl.png`
-- [x] Daniel Kahneman (1934-2024) - `daniel-kahneman.png`
-
-### Feminist & Gender Theorists (7)
-- [x] Mary Wollstonecraft (1759-1797) - `mary-wollstonecraft.png`
-- [x] Betty Friedan (1921-2006) - `betty-friedan.png`
-- [x] bell hooks (1952-2021) - `bell-hooks.png`
-- [x] Judith Butler (1956-present) - `judith-butler.png`
-- [x] Audre Lorde (1934-1992) - `audre-lorde.png`
-- [x] Gloria Steinem (1934-present) - `gloria-steinem.png`
-- [x] Chimamanda Ngozi Adichie (1977-present) - `chimamanda-ngozi-adichie.png`
+**Completion Rate:** 99.5%
 
 ---
 
-## New Personas Pending Image Generation (144 total)
+## Pending Images (1)
 
-### Mystics (6)
-- [x] Rumi (1207-1273) - `rumi.png`
-- [x] Meister Eckhart (1260-1328) - `eckhart.png`
-- [x] Kabir (1440-1518) - `kabir.png`
-- [x] Teresa of Ávila (1515-1582) - `teresa.png`
-- [x] Ramana Maharshi (1879-1950) - `ramana.png`
-- [x] Dogen (1200-1253) - `dogen.png`
+| Category | Name | Expected Filename |
+|----------|------|-------------------|
+| Theologians | Muhammad (570-632 CE) | `muhammad.png` |
 
-### Social Reformers (6)
-- [x] Mahatma Gandhi (1869-1948) - `gandhi.png`
-- [x] Rosa Luxemburg (1871-1919) - `luxemburg.png`
-- [x] Martin Luther King Jr. (1929-1968) - `king.png`
-- [x] Malcolm X (1925-1965) - `malcolm_x.png`
-- [x] Nelson Mandela (1918-2013) - `mandela.png`
-- [x] Emmeline Pankhurst (1858-1928) - `pankhurst.png`
+---
 
-### Economists (6)
-- [x] Adam Smith (1723-1790) - `smith.png`
-- [x] John Maynard Keynes (1883-1946) - `keynes.png`
-- [x] Friedrich Hayek (1899-1992) - `hayek.png`
-- [x] Milton Friedman (1912-2006) - `friedman.png`
-- [x] Amartya Sen (1933-present) - `sen.png`
-- [x] Joseph Schumpeter (1883-1950) - `schumpeter.png`
+## Complete Images by Category (198 total)
 
-### Artists & Aestheticians (7)
-- [x] Leonardo da Vinci (1452-1519) - `leonardo.png`
-- [x] Vincent van Gogh (1853-1890) - `vangogh.png`
-- [x] Pablo Picasso (1881-1973) - `picasso.png`
-- [x] Wassily Kandinsky (1866-1944) - `kandinsky.png`
-- [x] Oscar Wilde (1854-1900) - `wilde.png`
-- [x] John Cage (1912-1992) - `cage.png`
-- [x] Frida Kahlo (1907-1954) - `kahlo.png`
+### Philosophers (11) - ALL COMPLETE
+- [x] Socrates - `socrates.png`
+- [x] Plato - `plato.png`
+- [x] Aristotle - `aristotle.png`
+- [x] Confucius - `confucius.png`
+- [x] René Descartes - `rene-descartes.png`
+- [x] David Hume - `david-hume.png`
+- [x] Immanuel Kant - `immanuel-kant.png`
+- [x] Søren Kierkegaard - `sren-kierkegaard.png`
+- [x] Karl Marx - `karl-marx.png`
+- [x] Jean-Paul Sartre - `jean-paul-sartre.png`
+- [x] Simone de Beauvoir - `simone-de-beauvoir.png`
 
-### Eastern Philosophers (7)
-- [x] Zhuangzi (c. 369-286 BCE) - `zhuangzi.png`
-- [x] Mencius (372-289 BCE) - `mencius.png`
-- [x] Xunzi (c. 310-235 BCE) - `xunzi.png`
-- [x] Mozi (c. 470-391 BCE) - `mozi.png`
-- [x] Zhu Xi (1130-1200) - `zhu_xi.png`
-- [x] Wang Yangming (1472-1529) - `wang_yangming.png`
-- [x] Thich Nhat Hanh (1926-2022) - `thich_nhat_hanh.png`
+### Scientists (11) - ALL COMPLETE
+- [x] Nicolaus Copernicus - `nicolaus-copernicus.png`
+- [x] Johannes Kepler - `johannes-kepler.png`
+- [x] Galileo Galilei - `galileo-galilei.png`
+- [x] Isaac Newton - `isaac-newton.png`
+- [x] Charles Darwin - `charles-darwin.png`
+- [x] Louis Pasteur - `louis-pasteur.png`
+- [x] James Clerk Maxwell - `james-clerk-maxwell.png`
+- [x] Nikola Tesla - `nikola-tesla.png`
+- [x] Marie Curie - `marie-curie.png`
+- [x] Albert Einstein - `albert-einstein.png`
+- [x] Niels Bohr - `niels-bohr.png`
 
-### Environmental Thinkers (6)
-- [x] Henry David Thoreau (1817-1862) - `thoreau.png`
-- [x] Aldo Leopold (1887-1948) - `leopold.png`
-- [x] Rachel Carson (1907-1964) - `carson.png`
-- [x] Arne Næss (1912-2009) - `naess.png`
-- [x] Vandana Shiva (1952-present) - `shiva.png`
-- [x] Robin Wall Kimmerer (1953-present) - `kimmerer.png`
+### Theologians (14) - 1 PENDING
+- [x] Laozi - `laozi.png`
+- [x] Nāgārjuna - `nagarjuna.png`
+- [x] Plotinus - `plotinus.png`
+- [x] Augustine of Hippo - `augustine-of-hippo.png`
+- [x] Adi Śaṅkara - `adi-sankara.png`
+- [x] Rāmānuja - `ramanuja.png`
+- [x] Al-Ghazālī - `al-ghazali.png`
+- [x] Moses Maimonides - `moses-maimonides.png`
+- [x] Thomas Aquinas - `thomas-aquinas.png`
+- [x] Martin Luther - `martin-luther.png`
+- [x] Karl Barth - `karl-barth.png`
+- [x] Jesus of Nazareth - `jesus-of-nazareth.png`
+- [ ] **Muhammad** - `muhammad.png` ⏳
+- [x] Paul the Apostle - `paul-the-apostle.png`
 
-### Ancient Schools (6)
-- [x] Epicurus (341-270 BCE) - `epicurus.png`
-- [x] Epictetus (c. 50-135 CE) - `epictetus.png`
-- [x] Marcus Aurelius (121-180 CE) - `marcus_aurelius.png`
-- [x] Diogenes of Sinope (c. 412-323 BCE) - `diogenes.png`
-- [x] Hypatia of Alexandria (c. 360-415 CE) - `hypatia.png`
-- [x] Pyrrho of Elis (c. 360-270 BCE) - `pyrrho.png`
+### Political Theorists (6) - ALL COMPLETE
+- [x] Niccolò Machiavelli - `niccolo-machiavelli.png`
+- [x] Thomas Hobbes - `thomas-hobbes.png`
+- [x] John Locke - `john-locke.png`
+- [x] Edmund Burke - `edmund-burke.png`
+- [x] Hannah Arendt - `hannah-arendt.png`
+- [x] Frantz Fanon - `frantz-fanon.png`
 
-### Literary Voices (7)
-- [x] Dante Alighieri (1265-1321) - `dante.png`
-- [x] William Shakespeare (1564-1616) - `shakespeare.png`
-- [x] Fyodor Dostoevsky (1821-1881) - `dostoevsky.png`
-- [x] James Joyce (1882-1941) - `joyce.png`
-- [x] Virginia Woolf (1882-1941) - `woolf.png`
-- [x] Jorge Luis Borges (1899-1986) - `borges.png`
-- [x] Toni Morrison (1931-2019) - `morrison.png`
+### Psychologists (6) - ALL COMPLETE
+- [x] William James - `william-james.png`
+- [x] Sigmund Freud - `sigmund-freud.png`
+- [x] Carl Jung - `carl-jung.png`
+- [x] B.F. Skinner - `bf-skinner.png`
+- [x] Viktor Frankl - `viktor-frankl.png`
+- [x] Daniel Kahneman - `daniel-kahneman.png`
 
-### Comedians & Satirists (7)
-- [x] Mark Twain (1835-1910) - `mark-twain.png`
-- [x] Lenny Bruce (1925-1966) - `lenny-bruce.png`
-- [x] George Carlin (1937-2008) - `george-carlin.png`
-- [x] Bill Hicks (1961-1994) - `bill-hicks.png`
-- [x] Jon Stewart (1962-present) - `jon-stewart.png`
-- [x] Dave Chappelle (1973-present) - `dave-chappelle.png`
-- [x] Hannah Gadsby (1978-present) - `hannah-gadsby.png`
+### Feminist & Gender Theorists (7) - ALL COMPLETE
+- [x] Mary Wollstonecraft - `mary-wollstonecraft.png`
+- [x] Betty Friedan - `betty-friedan.png`
+- [x] bell hooks - `bell-hooks.png`
+- [x] Audre Lorde - `audre-lorde.png`
+- [x] Gloria Steinem - `gloria-steinem.png`
+- [x] Judith Butler - `judith-butler.png`
+- [x] Chimamanda Ngozi Adichie - `chimamanda-ngozi-adichie.png`
 
-### Contemporary Public Intellectuals (7)
-- [x] Noam Chomsky (1928-present) - `noam-chomsky.png`
-- [x] Camille Paglia (1947-present) - `camille-paglia.png`
-- [x] Slavoj Žižek (1949-present) - `slavoj-zizek.png`
-- [x] Nassim Nicholas Taleb (1960-present) - `nassim-nicholas-taleb.png`
-- [x] Jordan Peterson (1962-present) - `jordan-peterson.png`
-- [x] Malcolm Gladwell (1963-present) - `malcolm-gladwell.png`
-- [x] Thomas Sowell (1930-present) - `thomas-sowell.png`
+### Mystics (6) - ALL COMPLETE
+- [x] Rumi - `jalal-al-din-rumi.png`
+- [x] Meister Eckhart - `meister-eckhart.png`
+- [x] Kabir - `kabir.png`
+- [x] Teresa of Ávila - `teresa-of-avila.png`
+- [x] Ramana Maharshi - `ramana-maharshi.png`
+- [x] Dōgen Zenji - `dogen-zenji.png`
 
-### Counterculture Icons (7)
-- [x] Emma Goldman (1869-1940) - `emma-goldman.png`
-- [x] Timothy Leary (1920-1996) - `timothy-leary.png`
-- [x] Howard Zinn (1922-2010) - `howard-zinn.png`
-- [x] Allen Ginsberg (1926-1997) - `allen-ginsberg.png`
-- [x] Abbie Hoffman (1936-1989) - `abbie-hoffman.png`
-- [x] Hunter S. Thompson (1937-2005) - `hunter-s-thompson.png`
-- [x] Angela Davis (1944-present) - `angela-davis.png`
+### Social Reformers (6) - ALL COMPLETE
+- [x] Mahatma Gandhi - `mohandas-karamchand-gandhi.png`
+- [x] Rosa Luxemburg - `rosa-luxemburg.png`
+- [x] Martin Luther King Jr. - `martin-luther-king-jr.png`
+- [x] Malcolm X - `malcolm-x.png`
+- [x] Nelson Mandela - `nelson-mandela.png`
+- [x] Emmeline Pankhurst - `emmeline-pankhurst.png`
 
-### Media Critics (7)
-- [ ] Walter Lippmann (1889-1974) - `lippmann.png`
-- [ ] Marshall McLuhan (1911-1980) - `mcluhan.png`
-- [ ] Neil Postman (1931-2003) - `postman.png`
-- [ ] Susan Sontag (1933-2004) - `sontag.png`
-- [ ] Sherry Turkle (1948-present) - `turkle.png`
-- [ ] Douglas Rushkoff (1961-present) - `rushkoff.png`
-- [ ] Naomi Klein (1970-present) - `klein.png`
+### Economists (6) - ALL COMPLETE
+- [x] Adam Smith - `adam-smith.png`
+- [x] John Maynard Keynes - `john-maynard-keynes.png`
+- [x] Friedrich Hayek - `friedrich-hayek.png`
+- [x] Milton Friedman - `milton-friedman.png`
+- [x] Joseph Schumpeter - `joseph-schumpeter.png`
+- [x] Amartya Sen - `amartya-sen.png`
 
-### African Thinkers (7)
-- [x] Kwame Nkrumah (1909-1972) - `kwame_nkrumah.png`
-- [x] Julius Nyerere (1922-1999) - `julius_nyerere.png`
-- [x] Cheikh Anta Diop (1923-1986) - `cheikh_anta_diop.png`
-- [x] Wangari Maathai (1940-2011) - `wangari_maathai.png`
-- [x] Steve Biko (1946-1977) - `steve_biko.png`
-- [x] Chinua Achebe (1930-2013) - `chinua_achebe.png`
-- [x] Thomas Sankara (1949-1987) - `thomas_sankara.png`
+### Artists & Aestheticians (7) - ALL COMPLETE
+- [x] Leonardo da Vinci - `leonardo-da-vinci.png`
+- [x] Vincent van Gogh - `vincent-van-gogh.png`
+- [x] Pablo Picasso - `pablo-picasso.png`
+- [x] Wassily Kandinsky - `wassily-kandinsky.png`
+- [x] Oscar Wilde - `oscar-wilde.png`
+- [x] John Cage - `john-cage.png`
+- [x] Frida Kahlo - `frida-kahlo.png`
 
-### Latin American Voices (7)
-- [ ] José Martí (1853-1895) - `jose_marti.png`
-- [x] Octavio Paz (1914-1998) - `octavio_paz.png`
-- [x] Paulo Freire (1921-1997) - `paulo_freire.png`
-- [x] Eduardo Galeano (1940-2015) - `eduardo_galeano.png`
-- [x] Subcomandante Marcos (1957-present) - `subcomandante_marcos.png`
-- [x] Gustavo Gutiérrez (1928-present) - `gustavo_gutierrez.png`
-- [x] Silvia Rivera Cusicanqui (1949-present) - `silvia_rivera_cusicanqui.png`
+### Eastern Philosophers (7) - ALL COMPLETE
+- [x] Zhuangzi - `zhuangzi.png`
+- [x] Mencius - `mencius.png`
+- [x] Xunzi - `xunzi.png`
+- [x] Mozi - `mozi.png`
+- [x] Zhu Xi - `zhu-xi.png`
+- [x] Wang Yangming - `wang-yangming.png`
+- [x] Thích Nhất Hạnh - `thich-nhat-hanh.png`
 
-### Legal Minds (7)
-- [ ] Clarence Darrow (1857-1938) - `clarence_darrow.png`
-- [ ] Louis Brandeis (1856-1941) - `louis_brandeis.png`
-- [ ] Thurgood Marshall (1908-1993) - `thurgood_marshall.png`
-- [ ] Ruth Bader Ginsburg (1933-2020) - `ruth_bader_ginsburg.png`
-- [ ] William O. Douglas (1898-1980) - `william_o_douglas.png`
-- [ ] Oliver Wendell Holmes Jr. (1841-1935) - `oliver_wendell_holmes_jr.png`
-- [ ] Derrick Bell (1930-2011) - `derrick_bell.png`
+### Environmental Thinkers (6) - ALL COMPLETE
+- [x] Henry David Thoreau - `henry-david-thoreau.png`
+- [x] Aldo Leopold - `aldo-leopold.png`
+- [x] Rachel Carson - `rachel-carson.png`
+- [x] Arne Næss - `arne-nss.png`
+- [x] Vandana Shiva - `vandana-shiva.png`
+- [x] Robin Wall Kimmerer - `robin-wall-kimmerer.png`
 
-### Journalists & Truth-Seekers (7)
-- [x] Ida B. Wells (1862-1931) - `ida_b_wells.png`
-- [x] H.L. Mencken (1880-1956) - `hl_mencken.png`
-- [x] I.F. Stone (1907-1989) - `if_stone.png`
-- [x] Martha Gellhorn (1908-1998) - `martha_gellhorn.png`
-- [x] Edward R. Murrow (1908-1965) - `edward_r_murrow.png`
-- [x] Seymour Hersh (1937-present) - `seymour_hersh.png`
-- [x] Glenn Greenwald (1967-present) - `glenn_greenwald.png`
+### Ancient Schools (6) - ALL COMPLETE
+- [x] Epicurus - `epicurus.png`
+- [x] Epictetus - `epictetus.png`
+- [x] Diogenes of Sinope - `diogenes-of-sinope.png`
+- [x] Pyrrho of Elis - `pyrrho-of-elis.png`
+- [x] Hypatia of Alexandria - `hypatia-of-alexandria.png`
+- [x] Marcus Aurelius - `marcus-aurelius.png`
 
-### Anthropologists & Cultural Observers (7)
-- [x] Franz Boas (1858-1942) - `franz-boas.png`
-- [x] Margaret Mead (1901-1978) - `margaret-mead.png`
-- [x] Claude Lévi-Strauss (1908-2009) - `claude-levi-strauss.png`
-- [x] Zora Neale Hurston (1891-1960) - `zora-neale-hurston.png`
-- [x] Clifford Geertz (1926-2006) - `clifford-geertz.png`
-- [x] Mary Douglas (1921-2007) - `mary-douglas.png`
-- [x] David Graeber (1961-2020) - `david-graeber.png`
+### Literary Voices (7) - ALL COMPLETE
+- [x] Dante Alighieri - `dante-alighieri.png`
+- [x] William Shakespeare - `william-shakespeare.png`
+- [x] Fyodor Dostoevsky - `fyodor-dostoevsky.png`
+- [x] James Joyce - `james-joyce.png`
+- [x] Virginia Woolf - `virginia-woolf.png`
+- [x] Jorge Luis Borges - `jorge-luis-borges.png`
+- [x] Toni Morrison - `toni-morrison.png`
 
-### Queer Theorists (6)
-- [x] Michel Foucault (1926-1984) - `michel_foucault.png`
-- [x] Eve Kosofsky Sedgwick (1950-2009) - `eve_kosofsky_sedgwick.png`
-- [x] José Esteban Muñoz (1967-2013) - `jose_esteban_munoz.png`
-- [x] Jack Halberstam (1961-present) - `jack_halberstam.png`
-- [x] Gayle Rubin (1949-present) - `gayle_rubin.png`
-- [x] Adrienne Rich (1929-2012) - `adrienne_rich.png`
+### Comedians & Satirists (7) - ALL COMPLETE
+- [x] Mark Twain - `mark-twain.png`
+- [x] Lenny Bruce - `lenny-bruce.png`
+- [x] George Carlin - `george-carlin.png`
+- [x] Bill Hicks - `bill-hicks.png`
+- [x] Jon Stewart - `jon-stewart.png`
+- [x] Dave Chappelle - `dave-chappelle.png`
+- [x] Hannah Gadsby - `hannah-gadsby.png`
 
-### Islamic Scholars (8)
-- [ ] Al-Kindi (801-873) - `al_kindi.png`
-- [ ] Al-Farabi (872-950) - `al_farabi.png`
-- [ ] Avicenna / Ibn Sina (980-1037) - `avicenna.png`
-- [ ] Averroes / Ibn Rushd (1126-1198) - `averroes.png`
-- [ ] Suhrawardi (1154-1191) - `suhrawardi.png`
-- [ ] Ibn Arabi (1165-1240) - `ibn_arabi.png`
-- [ ] Ibn Khaldun (1332-1406) - `ibn_khaldun.png`
-- [ ] Mulla Sadra (1571-1640) - `mulla_sadra.png`
+### Contemporary Public Intellectuals (7) - ALL COMPLETE
+- [x] Noam Chomsky - `noam-chomsky.png`
+- [x] Camille Paglia - `camille-paglia.png`
+- [x] Slavoj Žižek - `slavoj-zizek.png`
+- [x] Nassim Nicholas Taleb - `nassim-nicholas-taleb.png`
+- [x] Jordan Peterson - `jordan-peterson.png`
+- [x] Malcolm Gladwell - `malcolm-gladwell.png`
+- [x] Thomas Sowell - `thomas-sowell.png`
 
-### Buddhist Masters (8)
-- [ ] The Buddha / Siddhartha Gautama (c. 563-483 BCE) - `the_buddha.png`
-- [ ] Vasubandhu (4th-5th c. CE) - `vasubandhu.png`
-- [ ] Buddhaghosa (5th c. CE) - `buddhaghosa.png`
-- [ ] Shantideva (8th c. CE) - `shantideva.png`
-- [ ] Bodhidharma (5th-6th c. CE) - `bodhidharma.png`
-- [ ] Padmasambhava (8th c. CE) - `padmasambhava.png`
-- [ ] Tsongkhapa (1357-1419) - `tsongkhapa.png`
-- [ ] 14th Dalai Lama / Tenzin Gyatso (1935-present) - `dalai_lama.png`
+### Counterculture Icons (7) - ALL COMPLETE
+- [x] Emma Goldman - `emma-goldman.png`
+- [x] Timothy Leary - `timothy-leary.png`
+- [x] Howard Zinn - `howard-zinn.png`
+- [x] Allen Ginsberg - `allen-ginsberg.png`
+- [x] Abbie Hoffman - `abbie-hoffman.png`
+- [x] Hunter S. Thompson - `hunter-s-thompson.png`
+- [x] Angela Davis - `angela-davis.png`
 
-### Modern Atheists & Skeptics (8)
-- [ ] Baruch Spinoza (1632-1677) - `baruch_spinoza.png`
-- [ ] Friedrich Nietzsche (1844-1900) - `friedrich_nietzsche.png`
-- [ ] Bertrand Russell (1872-1970) - `bertrand_russell.png`
-- [ ] Albert Camus (1913-1960) - `albert_camus.png`
-- [ ] Richard Dawkins (1941-present) - `richard_dawkins.png`
-- [ ] Christopher Hitchens (1949-2011) - `christopher_hitchens.png`
-- [ ] Daniel Dennett (1942-2024) - `daniel_dennett.png`
-- [ ] Sam Harris (1967-present) - `sam_harris.png`
+### Media Critics (7) - ALL COMPLETE
+- [x] Walter Lippmann - `walter-lippmann.png`
+- [x] Marshall McLuhan - `marshall-mcluhan.png`
+- [x] Neil Postman - `neil-postman.png`
+- [x] Susan Sontag - `susan-sontag.png`
+- [x] Sherry Turkle - `sherry-turkle.png`
+- [x] Douglas Rushkoff - `douglas-rushkoff.png`
+- [x] Naomi Klein - `naomi-klein.png`
+
+### African Thinkers (7) - ALL COMPLETE
+- [x] Kwame Nkrumah - `kwame-nkrumah.png`
+- [x] Julius Nyerere - `julius-nyerere.png`
+- [x] Cheikh Anta Diop - `cheikh-anta-diop.png`
+- [x] Wangari Maathai - `wangari-maathai.png`
+- [x] Steve Biko - `steve-biko.png`
+- [x] Chinua Achebe - `chinua-achebe.png`
+- [x] Thomas Sankara - `thomas-sankara.png`
+
+### Latin American Voices (7) - ALL COMPLETE
+- [x] José Martí - `jose-marti.png`
+- [x] Octavio Paz - `octavio-paz.png`
+- [x] Paulo Freire - `paulo-freire.png`
+- [x] Eduardo Galeano - `eduardo-galeano.png`
+- [x] Subcomandante Marcos - `subcomandante-marcos.png`
+- [x] Gustavo Gutiérrez - `gustavo-gutierrez.png`
+- [x] Silvia Rivera Cusicanqui - `silvia-rivera-cusicanqui.png`
+
+### Legal Minds (7) - ALL COMPLETE
+- [x] Clarence Darrow - `clarence-darrow.png`
+- [x] Louis Brandeis - `louis-brandeis.png`
+- [x] Oliver Wendell Holmes Jr. - `oliver-wendell-holmes-jr.png`
+- [x] Thurgood Marshall - `thurgood-marshall.png`
+- [x] William O. Douglas - `william-o-douglas.png`
+- [x] Ruth Bader Ginsburg - `ruth-bader-ginsburg.png`
+- [x] Derrick Bell - `derrick-bell.png`
+
+### Journalists & Truth-Seekers (7) - ALL COMPLETE
+- [x] Ida B. Wells - `ida-b-wells.png`
+- [x] H.L. Mencken - `hl-mencken.png`
+- [x] I.F. Stone - `if-stone.png`
+- [x] Martha Gellhorn - `martha-gellhorn.png`
+- [x] Edward R. Murrow - `edward-r-murrow.png`
+- [x] Seymour Hersh - `seymour-hersh.png`
+- [x] Glenn Greenwald - `glenn-greenwald.png`
+
+### Anthropologists & Cultural Observers (7) - ALL COMPLETE
+- [x] Franz Boas - `franz-boas.png`
+- [x] Margaret Mead - `margaret-mead.png`
+- [x] Claude Lévi-Strauss - `claude-levi-strauss.png`
+- [x] Zora Neale Hurston - `zora-neale-hurston.png`
+- [x] Clifford Geertz - `clifford-geertz.png`
+- [x] Mary Douglas - `mary-douglas.png`
+- [x] David Graeber - `david-graeber.png`
+
+### Queer Theorists (6) - ALL COMPLETE
+- [x] Michel Foucault - `michel-foucault.png`
+- [x] Eve Kosofsky Sedgwick - `eve-kosofsky-sedgwick.png`
+- [x] José Esteban Muñoz - `jose-esteban-munoz.png`
+- [x] Jack Halberstam - `jack-halberstam.png`
+- [x] Gayle Rubin - `gayle-rubin.png`
+- [x] Adrienne Rich - `adrienne-rich.png`
+
+### Islamic Scholars (8) - ALL COMPLETE
+- [x] Al-Kindi - `al-kindi.png`
+- [x] Al-Farabi - `al-farabi.png`
+- [x] Avicenna / Ibn Sina - `avicenna.png`
+- [x] Averroes / Ibn Rushd - `averroes.png`
+- [x] Suhrawardi - `suhrawardi.png`
+- [x] Ibn Arabi - `ibn-arabi.png`
+- [x] Ibn Khaldun - `ibn-khaldun.png`
+- [x] Mulla Sadra - `mulla-sadra.png`
+
+### Buddhist Masters (8) - ALL COMPLETE
+- [x] The Buddha - `the-buddha.png`
+- [x] Vasubandhu - `vasubandhu.png`
+- [x] Buddhaghosa - `buddhaghosa.png`
+- [x] Shantideva - `shantideva.png`
+- [x] Bodhidharma - `bodhidharma.png`
+- [x] Padmasambhava - `padmasambhava.png`
+- [x] Tsongkhapa - `tsongkhapa.png`
+- [x] 14th Dalai Lama - `14th-dalai-lama-tenzin-gyatso.png`
+
+### Modern Atheists & Skeptics (8) - ALL COMPLETE
+- [x] Baruch Spinoza - `baruch-spinoza.png`
+- [x] Friedrich Nietzsche - `friedrich-nietzsche.png`
+- [x] Bertrand Russell - `bertrand-russell.png`
+- [x] Albert Camus - `albert-camus.png`
+- [x] Richard Dawkins - `richard-dawkins.png`
+- [x] Christopher Hitchens - `christopher-hitchens.png`
+- [x] Daniel Dennett - `daniel-dennett.png`
+- [x] Sam Harris - `sam-harris.png`
 
 ---
 
@@ -264,21 +285,19 @@ Track which personas have portraits and which need images generated via ChatGPT.
 
 When adding a new persona:
 
-1. Add the persona to the database using Django admin or management commands
-2. Add their name to the appropriate section above with `[ ]` unchecked
-3. Generate portrait using ChatGPT with prompt like:
+1. Generate portrait using ChatGPT/DALL-E with prompt:
    ```
    Create a dignified portrait of [NAME], the [TITLE/DESCRIPTION].
-   Style: Classical portrait painting, scholarly, appropriate to their era ([ERA]).
+   Style: Classical portrait painting, scholarly, appropriate to their era.
    Include symbolic elements representing their work/philosophy.
    ```
-4. Save image as `[slug].png` in `/portraits/` directory
-5. Update database `portrait_image` field
-6. Check off `[x]` in this tracker
+2. Save as `[slug].png` in `frontend/public/portraits/`
+3. Use lowercase, hyphens for spaces (matches persona slug)
+4. Resolution: 512x512 or similar for web display
+5. Update this tracker
 
 ## Notes
 
-- All current personas have portrait images
-- Keep naming convention: lowercase, hyphens for spaces
-- Image format: PNG preferred
-- Resolution: Should be suitable for web display (suggest 512x512 or similar)
+- Filename convention: lowercase with hyphens (e.g., `martin-luther-king-jr.png`)
+- Some persona fixture files use underscores, but images should use hyphens
+- PNG format preferred
