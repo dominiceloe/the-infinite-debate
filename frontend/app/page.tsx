@@ -26,9 +26,11 @@ import {
   Chip,
   FormControlLabel,
   Checkbox,
+  Popover,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // Rotating engaging hooks for the homepage
 const ENGAGING_HOOKS = [
@@ -79,6 +81,8 @@ export default function Home() {
   const [hookText] = React.useState(() =>
     ENGAGING_HOOKS[Math.floor(Math.random() * ENGAGING_HOOKS.length)]
   );
+  const [categoryAnchor, setCategoryAnchor] = React.useState<HTMLButtonElement | null>(null);
+  const [eraAnchor, setEraAnchor] = React.useState<HTMLButtonElement | null>(null);
 
   const { data, isLoading, error } = useQuery<PersonasByCategory>({
     queryKey: ['personas', 'by_category'],
@@ -155,6 +159,14 @@ export default function Home() {
     }, {} as PersonasByCategory);
   }, [data, selectedCategories, selectedEras, searchQuery, showOnlyAvailable, user?.subscription_tier]);
 
+  // Calculate total filtered count for display
+  const totalFilteredCount = React.useMemo(() => {
+    if (!filteredData) return 0;
+    return Object.values(filteredData).reduce((sum, personas) => sum + personas.length, 0);
+  }, [filteredData]);
+
+  const hasActiveFilters = searchQuery || selectedCategories.length > 0 || selectedEras.length > 0 || showOnlyAvailable;
+
   if (error) {
     return (
       <Box
@@ -201,305 +213,237 @@ export default function Home() {
           </Box>
         ) : (
           <>
-            {/* Introduction */}
-            <Box sx={{ textAlign: 'center', mb: { xs: 4, md: 6 }, px: 1 }}>
-              {/* Engaging question hook */}
+            {/* Introduction - Compact */}
+            <Box sx={{ textAlign: 'center', mb: { xs: 2, md: 3 }, px: 1 }}>
               <Typography
-                variant="body1"
+                variant="body2"
                 sx={{
                   fontStyle: 'italic',
                   color: 'text.secondary',
-                  mb: { xs: 2, md: 3 },
-                  fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.15rem' },
-                  maxWidth: '900px',
-                  mx: 'auto',
+                  mb: 1,
+                  fontSize: { xs: '0.875rem', md: '1rem' },
                 }}
               >
                 {hookText}
               </Typography>
-
-              {/* Main heading */}
               <Typography
-                variant="h2"
+                variant="h4"
                 component="h2"
                 sx={{
                   fontWeight: 700,
-                  mb: { xs: 1.5, md: 2 },
-                  fontSize: { xs: '1.5rem', sm: '1.875rem', md: '2.25rem' },
+                  mb: 0.5,
+                  fontSize: { xs: '1.25rem', md: '1.75rem' },
                 }}
               >
                 Choose Your Thinkers
               </Typography>
-
-              {/* Descriptive text */}
               <Typography
-                variant="h6"
+                variant="body2"
                 color="text.secondary"
-                sx={{
-                  maxWidth: '2xl',
-                  mx: 'auto',
-                  fontSize: { xs: '1rem', sm: '1.125rem', md: '1.25rem' },
-                  fontWeight: 400,
-                }}
               >
-                Select from {Object.values(data || {}).reduce((sum, personas) => sum + personas.length, 0)} historical figures to create philosophical debates.
+                {Object.values(data || {}).reduce((sum, personas) => sum + personas.length, 0)} historical figures
               </Typography>
             </Box>
 
-            {/* Search and Filter */}
-            <Box sx={{ mb: { xs: 4, md: 5 } }}>
-              {/* Search bar */}
-              <TextField
-                fullWidth
-                placeholder="Search by name, title, or era..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                inputProps={{
-                  'aria-label': 'Search personas by name, title, or era',
-                }}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: searchQuery ? (
-                      <InputAdornment position="end">
-                        <IconButton
-                          size="small"
-                          onClick={() => setSearchQuery('')}
-                          aria-label="Clear search"
-                        >
-                          <ClearIcon fontSize="small" />
-                        </IconButton>
-                      </InputAdornment>
-                    ) : null,
-                  }
-                }}
-                sx={{ mb: 3 }}
-              />
-
-              {/* Available to Me filter toggle - Enhanced visibility */}
+            {/* Compact Search + Filters */}
+            <Box sx={{ mb: 3 }}>
+              {/* Search bar + filter buttons inline */}
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: 'center',
-                  mb: 4,
-                  p: 2,
-                  borderRadius: 2,
-                  bgcolor: showOnlyAvailable ? 'primary.50' : 'grey.50',
-                  border: 1,
-                  borderColor: showOnlyAvailable ? 'primary.main' : 'divider',
-                  transition: 'all 0.3s ease',
-                }}
-                role="region"
-                aria-label="Persona availability filter"
-              >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={showOnlyAvailable}
-                      onChange={(e) => setShowOnlyAvailable(e.target.checked)}
-                      size="medium"
-                      inputProps={{
-                        'aria-label': 'Show only personas available to my subscription tier',
-                      }}
-                    />
-                  }
-                  label={
-                    <Box>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontSize: { xs: '0.95rem', md: '1.05rem' },
-                          fontWeight: showOnlyAvailable ? 600 : 500,
-                        }}
-                      >
-                        Available to Me
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mt: 0.25 }}
-                      >
-                        {showOnlyAvailable
-                          ? `Showing personas for your ${user?.subscription_tier || 'free'} tier`
-                          : 'Filter to show only accessible personas'
-                        }
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </Box>
-
-              {/* Filter section with visual divider */}
-              <Box
-                sx={{
-                  pt: 3,
-                  borderTop: 2,
-                  borderColor: 'divider',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  alignItems: { xs: 'stretch', md: 'center' },
+                  gap: { xs: 1.5, md: 2 },
+                  mb: 2,
                 }}
               >
-                {/* Category filters */}
-                <Box
-                  sx={{ mb: 3 }}
-                  role="group"
-                  aria-label="Filter personas by category"
-                >
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      display: 'block',
-                      textAlign: 'center',
-                      mb: 2,
-                      color: 'text.primary',
-                      fontWeight: 600,
-                      fontSize: { xs: '0.875rem', md: '1rem' },
-                    }}
-                  >
-                    By Category
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
-                    {data && Object.keys(data).map((categoryKey) => {
-                      const categoryInfo = getCategoryInfo(categoryKey);
-                      const isSelected = selectedCategories.includes(categoryKey);
-                      return (
-                        <Chip
-                          key={categoryKey}
-                          label={categoryInfo.title}
-                          onClick={() => toggleCategoryFilter(categoryKey)}
-                          color={isSelected ? 'primary' : 'default'}
-                          variant={isSelected ? 'filled' : 'outlined'}
-                          aria-pressed={isSelected}
-                          aria-label={`Filter by ${categoryInfo.title} category`}
-                          sx={{
-                            width: { xs: '100%', sm: 'auto' },
-                            fontSize: { xs: '0.8125rem', md: '0.875rem' },
-                            height: { xs: '36px', md: '32px' },
-                            '& .MuiChip-label': {
-                              px: { xs: 2, md: 1.5 },
-                              py: { xs: 1.25, md: 0.5 },
-                            },
-                            '&:hover': {
-                              bgcolor: isSelected ? 'primary.dark' : 'action.hover',
-                            },
-                            '&:focus-visible': {
-                              outline: '2px solid',
-                              outlineColor: 'primary.main',
-                              outlineOffset: '2px',
-                            },
-                          }}
-                        />
-                      );
-                    })}
-                  </Box>
-                </Box>
-
-                {/* Visual divider between filter sections */}
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Box sx={{ flex: 1, height: 1, bgcolor: 'divider' }} />
-                  <Typography
-                    variant="caption"
-                    sx={{ px: 2, color: 'text.disabled', fontWeight: 500 }}
-                  >
-                    AND
-                  </Typography>
-                  <Box sx={{ flex: 1, height: 1, bgcolor: 'divider' }} />
-                </Box>
-
-                {/* Era/Time Period filters */}
-                <Box
-                  sx={{ mb: 2 }}
-                  role="group"
-                  aria-label="Filter personas by historical era"
-                >
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      display: 'block',
-                      textAlign: 'center',
-                      mb: 2,
-                      color: 'text.primary',
-                      fontWeight: 600,
-                      fontSize: { xs: '0.875rem', md: '1rem' },
-                    }}
-                  >
-                    By Era
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
-                    {(Object.keys(ERA_INFO) as Era[]).map((era) => {
-                      const eraInfo = ERA_INFO[era];
-                      const isSelected = selectedEras.includes(era);
-                      return (
-                        <Chip
-                          key={era}
-                          label={`${eraInfo.label} (${eraInfo.range})`}
-                          onClick={() => toggleEraFilter(era)}
-                          color={isSelected ? 'secondary' : 'default'}
-                          variant={isSelected ? 'filled' : 'outlined'}
-                          aria-pressed={isSelected}
-                          aria-label={`Filter by ${eraInfo.label} era, ${eraInfo.range}`}
-                          sx={{
-                            width: { xs: '100%', sm: 'auto' },
-                            fontSize: { xs: '0.8125rem', md: '0.875rem' },
-                            height: { xs: '36px', md: '32px' },
-                            '& .MuiChip-label': {
-                              px: { xs: 2, md: 1.5 },
-                              py: { xs: 1.25, md: 0.5 },
-                            },
-                            '&:hover': {
-                              bgcolor: isSelected ? 'secondary.dark' : 'action.hover',
-                            },
-                            '&:focus-visible': {
-                              outline: '2px solid',
-                              outlineColor: 'secondary.main',
-                              outlineOffset: '2px',
-                            },
-                          }}
-                        />
-                      );
-                    })}
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Active filters summary */}
-              {(searchQuery || selectedCategories.length > 0 || selectedEras.length > 0 || showOnlyAvailable) && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    justifyContent: 'center',
-                    mt: 3,
-                    pt: 2,
-                    borderTop: 1,
-                    borderColor: 'divider',
+                {/* Search */}
+                <TextField
+                  placeholder="Search personas..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  size="small"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon color="action" fontSize="small" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: searchQuery ? (
+                        <InputAdornment position="end">
+                          <IconButton size="small" onClick={() => setSearchQuery('')}>
+                            <ClearIcon fontSize="small" />
+                          </IconButton>
+                        </InputAdornment>
+                      ) : null,
+                    }
                   }}
-                  role="status"
-                  aria-live="polite"
-                  aria-label="Active filters"
-                >
-                  <Typography variant="caption" color="text.secondary">
-                    {searchQuery && `Searching: "${searchQuery}"`}
-                    {searchQuery && (selectedCategories.length > 0 || selectedEras.length > 0 || showOnlyAvailable) && ' • '}
-                    {selectedCategories.length > 0 && `${selectedCategories.length} categories`}
-                    {selectedCategories.length > 0 && (selectedEras.length > 0 || showOnlyAvailable) && ' • '}
-                    {selectedEras.length > 0 && `${selectedEras.length} eras`}
-                    {selectedEras.length > 0 && showOnlyAvailable && ' • '}
-                    {showOnlyAvailable && 'Available only'}
-                  </Typography>
+                  sx={{ flex: 1, minWidth: { xs: '100%', md: 200 } }}
+                />
+
+                {/* Filter buttons */}
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {/* Categories Popover */}
                   <Button
                     size="small"
-                    onClick={clearFilters}
-                    aria-label="Clear all active filters"
-                    sx={{ fontSize: '0.75rem', textTransform: 'none' }}
+                    variant={selectedCategories.length > 0 ? 'contained' : 'outlined'}
+                    onClick={(e) => setCategoryAnchor(e.currentTarget)}
+                    endIcon={<ExpandMoreIcon />}
+                    sx={{ textTransform: 'none', minWidth: 'auto' }}
                   >
-                    Clear all
+                    Categories{selectedCategories.length > 0 && ` (${selectedCategories.length})`}
                   </Button>
+                  <Popover
+                    open={Boolean(categoryAnchor)}
+                    anchorEl={categoryAnchor}
+                    onClose={() => setCategoryAnchor(null)}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                  >
+                    <Box sx={{ p: 2, maxHeight: 350, overflow: 'auto', minWidth: 220 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="subtitle2">Categories</Typography>
+                        {selectedCategories.length > 0 && (
+                          <Button size="small" onClick={() => setSelectedCategories([])} sx={{ p: 0, minWidth: 'auto' }}>
+                            Clear
+                          </Button>
+                        )}
+                      </Box>
+                      {data && Object.keys(data).sort().map((categoryKey) => {
+                        const categoryInfo = getCategoryInfo(categoryKey);
+                        return (
+                          <FormControlLabel
+                            key={categoryKey}
+                            control={
+                              <Checkbox
+                                size="small"
+                                checked={selectedCategories.includes(categoryKey)}
+                                onChange={() => toggleCategoryFilter(categoryKey)}
+                              />
+                            }
+                            label={<Typography variant="body2">{categoryInfo.title}</Typography>}
+                            sx={{ display: 'flex', m: 0, py: 0.25 }}
+                          />
+                        );
+                      })}
+                    </Box>
+                  </Popover>
+
+                  {/* Eras Popover */}
+                  <Button
+                    size="small"
+                    variant={selectedEras.length > 0 ? 'contained' : 'outlined'}
+                    onClick={(e) => setEraAnchor(e.currentTarget)}
+                    endIcon={<ExpandMoreIcon />}
+                    sx={{ textTransform: 'none', minWidth: 'auto' }}
+                  >
+                    Eras{selectedEras.length > 0 && ` (${selectedEras.length})`}
+                  </Button>
+                  <Popover
+                    open={Boolean(eraAnchor)}
+                    anchorEl={eraAnchor}
+                    onClose={() => setEraAnchor(null)}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                  >
+                    <Box sx={{ p: 2, minWidth: 220 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="subtitle2">Eras</Typography>
+                        {selectedEras.length > 0 && (
+                          <Button size="small" onClick={() => setSelectedEras([])} sx={{ p: 0, minWidth: 'auto' }}>
+                            Clear
+                          </Button>
+                        )}
+                      </Box>
+                      {(Object.keys(ERA_INFO) as Era[]).map((era) => {
+                        const eraInfo = ERA_INFO[era];
+                        return (
+                          <FormControlLabel
+                            key={era}
+                            control={
+                              <Checkbox
+                                size="small"
+                                checked={selectedEras.includes(era)}
+                                onChange={() => toggleEraFilter(era)}
+                              />
+                            }
+                            label={<Typography variant="body2">{eraInfo.label}</Typography>}
+                            sx={{ display: 'flex', m: 0, py: 0.25 }}
+                          />
+                        );
+                      })}
+                    </Box>
+                  </Popover>
+
+                  {/* Available checkbox */}
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size="small"
+                        checked={showOnlyAvailable}
+                        onChange={(e) => setShowOnlyAvailable(e.target.checked)}
+                      />
+                    }
+                    label={<Typography variant="body2">Available</Typography>}
+                    sx={{ m: 0, ml: { xs: 0, md: 1 } }}
+                  />
+
+                  {/* Clear all */}
+                  {hasActiveFilters && (
+                    <Button
+                      size="small"
+                      onClick={clearFilters}
+                      sx={{ textTransform: 'none', minWidth: 'auto' }}
+                    >
+                      Clear all
+                    </Button>
+                  )}
                 </Box>
-              )}
+              </Box>
+
+              {/* Result count + active filter chips */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  flexWrap: 'wrap',
+                  minHeight: 28,
+                }}
+                role="status"
+                aria-live="polite"
+              >
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  {totalFilteredCount} {totalFilteredCount === 1 ? 'persona' : 'personas'}
+                </Typography>
+                {selectedCategories.map((cat) => (
+                  <Chip
+                    key={cat}
+                    label={getCategoryInfo(cat).title}
+                    size="small"
+                    onDelete={() => toggleCategoryFilter(cat)}
+                    sx={{ height: 24 }}
+                  />
+                ))}
+                {selectedEras.map((era) => (
+                  <Chip
+                    key={era}
+                    label={ERA_INFO[era].label}
+                    size="small"
+                    color="secondary"
+                    onDelete={() => toggleEraFilter(era)}
+                    sx={{ height: 24 }}
+                  />
+                ))}
+                {showOnlyAvailable && (
+                  <Chip
+                    label="Available only"
+                    size="small"
+                    color="primary"
+                    onDelete={() => setShowOnlyAvailable(false)}
+                    sx={{ height: 24 }}
+                  />
+                )}
+              </Box>
             </Box>
 
             {/* Dynamically render all categories */}
