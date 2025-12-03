@@ -13,7 +13,7 @@ Track which personas have primary texts ingested into the database and external 
 - 🎉 **115 total authors** now have primary texts (was 85 → +30 new authors!)
 - 📚 **82,692 total sections** parsed across all texts (+193% increase!)
 - 📖 **69,385,641 total words** (69+ million words of primary source material! +200% increase!)
-- ✅ **196 personas processed** with fuzzy slug matching
+- ✅ **199 personas** total in system (196 at time of batch + 3 new religious figures)
 - ⚡ **Major personas recovered** that failed in first run (Descartes, Kant, Shakespeare, Darwin, etc.)
 - 🔧 **Fuzzy matching strategies:** exact → hyphenated → partial → name search
 - 📊 **100% success rate** finding previously skipped personas
@@ -202,7 +202,7 @@ Track which personas have primary texts ingested into the database and external 
 
 ---
 
-## Personas Pending Primary Texts (136 total)
+## Personas Pending Primary Texts (139 total)
 
 ### Philosophers (0 remaining - all from original tracker complete!)
 
@@ -214,12 +214,15 @@ Track which personas have primary texts ingested into the database and external 
 - [ ] Nikola Tesla
 - [ ] Marie Curie
 
-### Theologians (6 remaining)
+### Theologians (8 remaining)
 - [ ] Karl Barth
 - [ ] Nāgārjuna
 - [ ] Plotinus
 - [ ] Rāmānuja
 - [ ] Adi Śaṅkara
+- [ ] Jesus of Nazareth - The Gospels (Matthew, Mark, Luke, John)
+- [ ] Muhammad - The Quran
+- [ ] Paul the Apostle - Epistles (Romans, 1 & 2 Corinthians, Galatians, Philippians, etc.)
 
 ### Political Theorists (3 remaining)
 - [ ] Edmund Burke (1729-1797)
