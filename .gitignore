@@ -25,6 +25,15 @@ htmlcov/
 .env
 .env.local
 .env.*.local
+.env.docker
+.env.production
+.env.staging
+.env.development
+.env.test
+
+# Backup files that might contain secrets
+*.bak
+*.backup
 
 # IDE
 .vscode/
