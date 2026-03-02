@@ -224,7 +224,7 @@ class TestWebhookSignatureValidation:
                 self.sig_header = sig_header
 
         # Mock the stripe module structure
-        mock_stripe.error.SignatureVerificationError = SignatureVerificationError
+        mock_stripe.SignatureVerificationError = SignatureVerificationError
         mock_stripe.Webhook.construct_event.side_effect = SignatureVerificationError(
             'Invalid signature', 'sig_header'
         )
