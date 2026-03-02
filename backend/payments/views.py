@@ -150,7 +150,7 @@ class CreateCheckoutSessionView(APIView):
                         # Subscription is cancelled or inactive, create new one
                         user.stripe_subscription_id = ''
                         user.save()
-                except stripe.error.StripeError as e:
+                except stripe.StripeError as e:
                     # If subscription doesn't exist, clear it and create new checkout
                     user.stripe_subscription_id = ''
                     user.save()
@@ -219,7 +219,7 @@ class StripeWebhookView(APIView):
             )
         except ValueError:
             return Response({'error': 'Invalid payload'}, status=400)
-        except stripe.error.SignatureVerificationError:
+        except stripe.SignatureVerificationError:
             return Response({'error': 'Invalid signature'}, status=400)
 
         # Log the event
