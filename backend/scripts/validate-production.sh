@@ -108,7 +108,7 @@ main() {
     header "4️⃣  Allowed Hosts Configuration"
     if [ -z "${ALLOWED_HOSTS}" ]; then
         error "ALLOWED_HOSTS not set. Django will reject all requests."
-        info "Set to your domain: ALLOWED_HOSTS=promptthepast.com"
+        info "Set to your domain: ALLOWED_HOSTS=api.theinfinitedebate.com"
     elif [[ "${ALLOWED_HOSTS}" == *"localhost"* ]] && [[ "${ALLOWED_HOSTS}" != *".com"* ]]; then
         warning "ALLOWED_HOSTS contains only localhost. Add production domain."
     else
@@ -186,7 +186,7 @@ main() {
     header "8️⃣  CORS Configuration"
     if [ -z "${CORS_ALLOWED_ORIGINS}" ]; then
         warning "CORS_ALLOWED_ORIGINS not set. Frontend may not be able to connect."
-        info "Set to: CORS_ALLOWED_ORIGINS=https://promptthepast.com"
+        info "Set to: CORS_ALLOWED_ORIGINS=https://theinfinitedebate.com"
     elif [[ "${CORS_ALLOWED_ORIGINS}" == *"localhost"* ]]; then
         warning "CORS_ALLOWED_ORIGINS includes localhost. Remove for production."
     else
