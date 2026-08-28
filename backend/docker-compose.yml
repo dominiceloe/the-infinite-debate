@@ -104,6 +104,7 @@ services:
   certbot:
     image: certbot/certbot
     container_name: debates_certbot
+    restart: unless-stopped
     volumes:
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
